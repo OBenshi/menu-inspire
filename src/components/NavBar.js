@@ -211,12 +211,3 @@ export default function SearchAppBar() {
 // </Breadcrumbs>
 //   );
 // }
-
-<AppBar position="fixed" color="primary">
-  <Toolbar>
-    <IconButton edge="start" color="inherit" aria-label="menu">
-      <MenuIcon />
-    </IconButton>
-    <Typography variant="h6"></Typography>
-  </Toolbar>
-</AppBar>;

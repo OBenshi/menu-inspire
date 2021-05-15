@@ -25,3 +25,4 @@ yarn-error.log*
 # obenshi
 src/key.js
 menuEX.json
+src/components/trulolo.js
