@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
 
     overflow: "hidden",
-    backgroundColor: theme.palette.background.paper,
+    // backgroundColor: theme.palette.background.paper,
   },
   menusContainer: {
     display: "flex",
@@ -61,25 +61,26 @@ function Menus() {
   }, []);
   return (
     <div className={classes.root}>
-      <Grid container spacing={1} className={classes.menusContainer}>
-        {!loadingi ? (
-          menus.map((menu, index) => {
+      {!loadingi ? (
+        <Grid container spacing={1} className={classes.menusContainer}>
+          {menus.map((menu, index) => {
             return (
               <Link to={`detail/${menu.id}`}>
                 <Grid item>
                   <img
-                    src={menu.large_src}
+                    src={menu.thumbnail_src}
                     alt={`${menu.sponsor},${menu.event}`}
                     className={classes.pic}
                   />
                 </Grid>
               </Link>
             );
-          })
-        ) : (
-          <Loading />
-        )}
-      </Grid>
+          })}
+        </Grid>
+      ) : (
+        <Loading />
+        // <p>Hello></p>
+      )}
     </div>
   );
 }

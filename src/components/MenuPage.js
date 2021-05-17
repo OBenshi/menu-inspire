@@ -29,64 +29,88 @@ import {
   useRouteMatch,
 } from "react-router-dom";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    // height: "80rem",
+    display: "flex",
+    height: "100vh",
+    background: "#ff0000",
+  },
+  page: {
+    display: "flex",
+    alignItems: "flex-start",
+    marginBottom: "1rem",
+    marginTop: "1rem",
+    // height: "100%",
+    // width: "100%",
+    background: "#ff0000",
+  },
+  pic: {
+    // height: "100%",
+    // width: "100%",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  },
+  table: {
+    // minWidth: 650,
+    height: "100%",
+    width: "100%",
+  },
+  pagePic: {
+    display: "flex",
+    alignContent: "center",
+    justifyContent: "center",
+  },
+}));
+
 function MenuPage(props) {
-  //   const { menuPage } = props;
-  //   const classes = useStyles();
+  const { menuPage } = props;
+  console.log("kkj", menuPage);
+  const classes = useStyles();
   let { pageId } = useParams();
+  console.log(pageId);
+  //   const [menuPagei, setMenuPagei] = useState(props);
+  //   setMenuPagei(menuPage);
   //   let { path, url } = useRouteMatch();
 
-  //   useEffect(() => {
-  //     fetchMenuPages();
-  //   }, []);
-  console.log(9999);
+  useEffect(() => {
+    console.log(9);
+  }, [pageId]);
+
   return (
-    <div>
-      <h3>{pageId}</h3>
+    <div key={pageId} className={classes.root}>
+      {menuPage && (
+        <Grid container direction="column">
+          <Grid item>
+            <Grid container className={classes.page}>
+              <Grid item xs={12} md={6} className={classes.pagePic}>
+                <img className={classes.pic} src={menuPage.large_src} alt="" />
+              </Grid>
+              {menuPage.dishes !== [] && (
+                <Grid item className={classes.pic} xs={12} md={6}>
+                  <TableContainer component={Paper}>
+                    <Table className={classes.table} aria-label="simple table">
+                      <TableBody>
+                        {menuPage.dishes.map((dish) => (
+                          <TableRow key={dish.name}>
+                            <TableCell component="th" scope="row">
+                              {dish.name}
+                            </TableCell>
+                            {dish.price && (
+                              <TableCell align="right">{dish.price}</TableCell>
+                            )}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
+        </Grid>
+      )}
     </div>
   );
-
-  // <Grid container direction="column">
-
-  //   {/* {!loading ? (
-  //       menuPages.map((page, index) => {
-  //         return (
-  //           <Grid item>
-  //             <Grid container className={classes.page}>
-  //               <Grid item xs={12} md={6}>
-  //                 <img className={classes.pic} src={page.large_src} alt="" />
-  //               </Grid>
-  //               {page.dishes !== [] && (
-  //                 <Grid item className={classes.pic} xs={12} md={6}>
-  //                   <TableContainer component={Paper}>
-  //                     <Table
-  //                       className={classes.table}
-  //                       aria-label="simple table"
-  //                     >
-  //                       <TableBody>
-  //                         {page.dishes.map((dish) => (
-  //                           <TableRow key={dish.name}>
-  //                             <TableCell component="th" scope="row">
-  //                               {dish.name}
-  //                             </TableCell>
-  //                             {dish.price && (
-  //                               <TableCell align="right">
-  //                                 {dish.price}$
-  //                               </TableCell>
-  //                             )}
-  //                           </TableRow>
-  //                         ))}
-  //                       </TableBody>
-  //                     </Table>
-  //                   </TableContainer>
-  //                 </Grid>
-  //               )}
-  //             </Grid>
-  //           </Grid>
-  //         );
-  //       })
-  //     ) : (
-  //       <Loading />
-  //     )} */}
-  // </Grid>
 }
 export default MenuPage;

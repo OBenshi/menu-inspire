@@ -31,6 +31,9 @@ import {
 } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    height: "100%",
+  },
   page: {
     display: "flex",
     alignItems: "flex-start",
@@ -53,6 +56,7 @@ function Detail(props) {
   let { id } = useParams();
   let { path, url } = useRouteMatch();
   const [menuPages, setMenuPages] = useState([]);
+  // const [menuPage, setMenuPage] = useState([]);
   const [loading, setLoading] = useState(true);
   const fetchMenuPages = () => {
     fetch(
@@ -68,7 +72,7 @@ function Detail(props) {
         console.log(e);
       });
   };
-  console.log(id);
+  // console.log(id);
 
   useEffect(() => {
     fetchMenuPages();
@@ -76,43 +80,61 @@ function Detail(props) {
   return (
     <div>
       {!loading ? (
-        <div>
-          <Breadcrumbs aria-label="breadcrumb" className={classes.Breadcrumbs}>
-            {menuPages.map((page, index) => {
-              console.log(`${url}/${page.id}`);
-              return (
-                <Link color="inherit" to={`${url}/${page.id}`}>
-                  <Typography className={classes.title} variant="h6" noWrap>
-                    {index}
-                  </Typography>
-                </Link>
-              );
-            })}
-          </Breadcrumbs>
-          <hr />
+        <Router>
+          <div className={classes.root}>
+            <Breadcrumbs
+              aria-label="breadcrumb"
+              className={classes.Breadcrumbs}
+            >
+              {menuPages.map((page, index) => {
+                console.log(`${page}`);
+                return (
+                  <Link color="inherit" to={`${url}/${page.id}`}>
+                    <Typography className={classes.title} variant="h6" noWrap>
+                      {index + 1}
+                    </Typography>
+                  </Link>
+                );
+              })}
+            </Breadcrumbs>
+            <hr />
 
-          <Switch>
-            <Route exact path={path}>
-              <h3>Please select a topic.</h3>
-            </Route>
+            <Switch>
+              <Route exact path={path}>
+                <h3>Please select a Menu Page.</h3>
+              </Route>
 
-            {menuPages.map((page, index) => {
-              return (
-                <Route exact path={`${path}:pageId`} children={<MenuPage />} />
-              );
-            })}
-          </Switch>
+              {menuPages ? (
+                menuPages.map((page, index) => {
+                  console.log(page);
+                  return (
+                    <Route
+                      exact
+                      path={`${path}/${page.id}`}
+                      // path={`${path}/:pageId`}
+                      // children={() => <MenuPage menuPage={page} />}
+                      // render={() => <MenuPage menuPage={page}}/>
+                    >
+                      <MenuPage menuPage={page} />
+                    </Route>
+                  );
+                })
+              ) : (
+                <p>fail</p>
+              )}
+            </Switch>
 
-          <Grid container className={classes.page}>
-            <Grid item xs={12} md={6}>
-              <img
-                className={classes.pic}
-                src={menuPages[0].large_src}
-                alt=""
-              />
-            </Grid>
-          </Grid>
-        </div>
+            {/* <Grid container className={classes.page}>
+              <Grid item xs={12} md={6}>
+                <img
+                  className={classes.pic}
+                  src={menuPages[0].large_src}
+                  alt=""
+                />
+              </Grid>
+            </Grid> */}
+          </div>
+        </Router>
       ) : (
         <Loading />
       )}
