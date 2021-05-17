@@ -1,5 +1,5 @@
 // import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 // import { AppBar, Toolbar, Typography, IconButton } from "@material-ui/core";
 // import { Menu as MenuIcon } from "@material-ui/icons";
 
@@ -93,16 +93,16 @@ const useStyles = makeStyles((theme) => ({
   },
   Breadcrumbs: {
     display: "flex",
-    position: "sticky",
+    // position: "sticky",
 
-    justifyContent: "center",
+    // justifyContent: "center",
     // background:
     //   // "radial-gradient(circle, #000000, #3b3b3b, #777777, #b9b9b9, #ffffff)",
     //   "radial-gradient(circle, #ffffff, #b9b9b9, #777777, #3b3b3b, #000000)",
   },
   link: {
-    display: "flex",
-    color: "primary",
+    display: "inline-flex",
+    // color: "primary",
   },
   icon: {
     marginRight: theme.spacing(0.5),
@@ -127,24 +127,27 @@ export default function SearchAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            MenuInspire
           </Typography>
           <div>
             {" "}
             <Breadcrumbs
               aria-label="breadcrumb"
               className={classes.Breadcrumbs}
+              maxItems={9}
+              itemsBeforeCollapse={9}
+              itemsAfterCollapse={9}
             >
-              <Link color="inherit" to="/" className={classes.link}>
+              <NavLink to="/" className={classes.link}>
                 <HomeIcon className={classes.icon} />
-                <Typography className={classes.title} variant="h6" noWrap>
-                  home
-                </Typography>
-              </Link>
-              <Link color="inherit" to="/menus" className={classes.link}>
+                {/* <Typography className={classes.title} variant="h6" noWrap> */}
+                home
+                {/* </Typography> */}
+              </NavLink>
+              <NavLink to="/menus" className={classes.link}>
                 <WhatshotIcon className={classes.icon} />
                 Menus
-              </Link>
+              </NavLink>
             </Breadcrumbs>
           </div>
           <div className={classes.search}>
@@ -158,6 +161,7 @@ export default function SearchAppBar() {
                 input: classes.inputInput,
               }}
               inputProps={{ "aria-label": "search" }}
+              on
             />
           </div>
         </Toolbar>
