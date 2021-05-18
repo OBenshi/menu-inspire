@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Menu from "../components/Menu.js";
 import Loading from "../components/Loading.js";
 import apiKey from "../key.js";
@@ -8,6 +8,7 @@ import { flexbox } from "@material-ui/system";
 import { GridList } from "@material-ui/core";
 import { GridListTile } from "@material-ui/core";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { SearchContext } from "../context/searchContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,21 +36,30 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
 }));
-function Menus() {
+function Menus(props) {
+  // console.log(props);
   const [menus, setMenus] = useState([]);
-  const [loadingi, setLoadingi] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [resultPage, setResultPage] = useState(1);
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  console.log(menus);
+
+  let toFetch;
+  searchTerm === ""
+    ? (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${apiKey}&status=complete&page=${resultPage}`)
+    : (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/search?query=${searchTerm}&token=${apiKey}&page=${resultPage}`);
+
   const classes = useStyles();
   const fetchMenus = () => {
-    fetch(
-      `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${apiKey}&status=complete`
-    )
+    fetch(toFetch)
       .then((response) => {
-        console.log(response);
+        // console.log(bob);
         return response.json();
       })
       .then((data) => {
-        setMenus(data.menus);
-        setLoadingi(false);
+        Math.ceil(data.stats.count / 50);
+        setMenus([...menus, ...data.menus]);
+        setLoading(false);
       })
       .catch((e) => {
         console.log(e);
@@ -58,10 +68,10 @@ function Menus() {
 
   useEffect(() => {
     fetchMenus();
-  }, []);
+  }, [resultPage, searchTerm]);
   return (
     <div className={classes.root}>
-      {!loadingi ? (
+      {!loading ? (
         <Grid container spacing={1} className={classes.menusContainer}>
           {menus.map((menu, index) => {
             return (
@@ -76,10 +86,16 @@ function Menus() {
               </Link>
             );
           })}
+          <button
+            onClick={() => {
+              setResultPage(resultPage + 1);
+            }}
+          >
+            more
+          </button>
         </Grid>
       ) : (
         <Loading />
-        // <p>Hello></p>
       )}
     </div>
   );

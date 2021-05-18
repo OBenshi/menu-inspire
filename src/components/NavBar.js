@@ -1,43 +1,17 @@
-// import React from "react";
-import { Link, NavLink } from "react-router-dom";
-// import { AppBar, Toolbar, Typography, IconButton } from "@material-ui/core";
-// import { Menu as MenuIcon } from "@material-ui/icons";
-
-// export default function NavBar() {
-//   return (
-//     <AppBar position="fixed" color="primary">
-//       <Toolbar>
-//         <Link to="/">
-//           <Typography variant="h6">home</Typography>
-//         </Link>
-//         <Link to="/menus">Menus</Link>
-//       </Toolbar>
-//     </AppBar>
-//     // <nav>
-//     //   <ul>
-//     //     <li>
-//     //       <Link to="/">Home</Link>
-//     //     </li>
-//     //     <li>
-//     //       <Link to="/menus">Menus</Link>
-//     //     </li>
-//     //   </ul>
-//     // </nav>
-//   );
-// }
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import { fade, makeStyles } from "@material-ui/core/styles";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import HomeIcon from "@material-ui/icons/Home";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import HomeIcon from "@material-ui/icons/Home";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
-import GrainIcon from "@material-ui/icons/Grain";
+import { NavLink, useHistory, useRouteMatch } from "react-router-dom";
+import { SearchContext } from "../context/searchContext";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -113,7 +87,20 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SearchAppBar() {
   const classes = useStyles();
+  const history = useHistory();
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  let { path, url } = useRouteMatch();
 
+  const handleSearch = (userSearchTerm) => {
+    console.log(`user search ${userSearchTerm}`);
+    console.log(`search term before channge ${searchTerm}`);
+    setSearchTerm(userSearchTerm);
+    setTimeout(
+      () => console.log(`search term after change ${searchTerm}`),
+      1000
+    );
+    history.push("/menus");
+  };
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -140,9 +127,7 @@ export default function SearchAppBar() {
             >
               <NavLink to="/" className={classes.link}>
                 <HomeIcon className={classes.icon} />
-                {/* <Typography className={classes.title} variant="h6" noWrap> */}
                 home
-                {/* </Typography> */}
               </NavLink>
               <NavLink to="/menus" className={classes.link}>
                 <WhatshotIcon className={classes.icon} />
@@ -151,67 +136,26 @@ export default function SearchAppBar() {
             </Breadcrumbs>
           </div>
           <div className={classes.search}>
-            <div className={classes.searchIcon}>
+            <div className={classes.searchIcon} onClick={() => console.log(8)}>
               <SearchIcon />
             </div>
             <InputBase
+              id="mainSearch"
               placeholder="Search…"
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
               inputProps={{ "aria-label": "search" }}
-              on
+              onKeyUp={(eve) => {
+                // console.log(eve.key);
+                eve.key === "Enter" && handleSearch(eve.target.value);
+              }}
             />
           </div>
         </Toolbar>
+        <p>{searchTerm}</p>
       </AppBar>
     </div>
   );
 }
-
-// const useStyles = makeStyles((theme) => ({
-//   Breadcrumbs: {
-//     display: "flex",
-//     position: "sticky",
-
-//     justifyContent: "center",
-//     background:
-//       // "radial-gradient(circle, #000000, #3b3b3b, #777777, #b9b9b9, #ffffff)",
-//       "radial-gradient(circle, #ffffff, #b9b9b9, #777777, #3b3b3b, #000000)",
-//   },
-//   link: {
-//     display: "flex",
-//   },
-//   icon: {
-//     marginRight: theme.spacing(0.5),
-//     width: 20,
-//     height: 20,
-//   },
-// }));
-
-// function handleClick(event) {
-//   event.preventDefault();
-//   console.info("You clicked a breadcrumb.");
-// }
-
-// export default function NavBar() {
-//   const classes = useStyles();
-
-//   return (
-// <Breadcrumbs aria-label="breadcrumb" className={classes.Breadcrumbs}>
-//   <Link color="inherit" to="/" className={classes.link}>
-//     <HomeIcon className={classes.icon} />
-//     Home
-//   </Link>
-//   <Link color="inherit" to="/menus" className={classes.link}>
-//     <WhatshotIcon className={classes.icon} />
-//     Menus
-//   </Link>
-//   <Typography color="textPrimary" className={classes.link}>
-//     <GrainIcon className={classes.icon} />
-//     Breadcrumb
-//   </Typography>
-// </Breadcrumbs>
-//   );
-// }

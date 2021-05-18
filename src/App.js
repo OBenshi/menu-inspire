@@ -14,6 +14,7 @@ import {
   makeStyles,
   ThemeProvider,
 } from "@material-ui/core";
+import { SearchContextProvider } from "./context/searchContext";
 
 const useStyles = makeStyles({
   root: {
@@ -40,20 +41,22 @@ function App() {
   return (
     <Router>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div className={classes.root}>
-          <NavBar />
-          <Switch>
-            <Route exact path="/">
-              <Home />
-            </Route>
-            <Route exact path="/menus">
-              <Menus />
-            </Route>
-            <Route exact path="/detail/:id" children={<Detail />} />
-            {/* <Route exact path="/detail/:id/:pageId"  >children={<MenuPage />} */}
-          </Switch>
-        </div>
+        <CssBaseline />{" "}
+        <SearchContextProvider>
+          <div className={classes.root}>
+            <NavBar />
+            <Switch>
+              <Route exact path="/">
+                <Home />
+              </Route>
+              <Route exact path="/menus">
+                <Menus />
+              </Route>
+              <Route exact path="/detail/:id" children={<Detail />} />
+              {/* <Route exact path="/detail/:id/:pageId"  >children={<MenuPage />} */}
+            </Switch>{" "}
+          </div>{" "}
+        </SearchContextProvider>
       </ThemeProvider>
     </Router>
   );

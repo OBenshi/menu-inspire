@@ -18,9 +18,7 @@ function Home() {
   return (
     <div style={myStyledDiv}>
       <h1>Hello {name}</h1>
-      <Button variant="primary" onClick={handleClick}>
-        Click me!
-      </Button>
+      <Button onClick={handleClick}>Click me!</Button>
 
       <HelloWorld myAge={age} />
     </div>
