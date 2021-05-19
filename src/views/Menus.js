@@ -9,6 +9,7 @@ import { GridList } from "@material-ui/core";
 import { GridListTile } from "@material-ui/core";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { SearchContext } from "../context/searchContext";
+import { MenusContext } from "../context/menusContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,11 +38,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 function Menus(props) {
-  // console.log(props);
-  const [menus, setMenus] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { menus, setMenus } = useContext(MenusContext);
+  const { loading, setLoading } = useContext(MenusContext);
   const [resultPage, setResultPage] = useState(1);
-  const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  const {
+    searchTerm,
+    setSearchTerm,
+    clearSearchTerm,
+    fetchAgain,
+    setFetchAgain,
+  } = useContext(SearchContext);
   console.log(menus);
 
   let toFetch;
@@ -58,17 +64,22 @@ function Menus(props) {
       })
       .then((data) => {
         Math.ceil(data.stats.count / 50);
-        setMenus([...menus, ...data.menus]);
+        // let tempMenus = data.menus;
+        menus === []
+          ? setMenus(data.menus)
+          : setMenus([...menus, ...data.menus]);
+        console.log(searchTerm);
+        // clearSearchTerm();
         setLoading(false);
       })
       .catch((e) => {
         console.log(e);
       });
   };
-
+  console.log(fetchAgain);
   useEffect(() => {
     fetchMenus();
-  }, [resultPage, searchTerm]);
+  }, [resultPage, fetchAgain]);
   return (
     <div className={classes.root}>
       {!loading ? (

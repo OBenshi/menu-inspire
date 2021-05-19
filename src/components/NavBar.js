@@ -10,8 +10,9 @@ import HomeIcon from "@material-ui/icons/Home";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
-import { NavLink, useHistory, useRouteMatch } from "react-router-dom";
+import { NavLink, Redirect, useHistory, useRouteMatch } from "react-router-dom";
 import { SearchContext } from "../context/searchContext";
+import { MenusContext } from "../context/menusContext";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -88,18 +89,21 @@ const useStyles = makeStyles((theme) => ({
 export default function SearchAppBar() {
   const classes = useStyles();
   const history = useHistory();
-  const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  const {
+    searchTerm,
+    setSearchTerm,
+    fetchAgain,
+    setFetchAgain,
+    changeFetchAgain,
+  } = useContext(SearchContext);
+  const { clearMenus } = useContext(MenusContext);
   let { path, url } = useRouteMatch();
 
   const handleSearch = (userSearchTerm) => {
-    console.log(`user search ${userSearchTerm}`);
-    console.log(`search term before channge ${searchTerm}`);
+    // setSearchTerm("");
+    clearMenus();
     setSearchTerm(userSearchTerm);
-    setTimeout(
-      () => console.log(`search term after change ${searchTerm}`),
-      1000
-    );
-    history.push("/menus");
+    path !== "/menus" ? history.push("/menus") : changeFetchAgain();
   };
   return (
     <div className={classes.root}>
