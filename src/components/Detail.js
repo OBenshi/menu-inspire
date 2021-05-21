@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import MenuPage from "../components/MenuPage.js";
 import apiKey from "../key.js";
 import { useParams } from "react-router-dom";
-import { Grid } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import Loading from "../components/Loading.js";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -22,13 +22,17 @@ import SearchIcon from "@material-ui/icons/Search";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import HomeIcon from "@material-ui/icons/Home";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
+import { MenusContext } from "../context/menusContext";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link,
+  NavLink,
+  useHistory,
   useRouteMatch,
 } from "react-router-dom";
+import GeneralInfo from "../components/GeneralInfo";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,95 +40,137 @@ const useStyles = makeStyles((theme) => ({
   },
   page: {
     display: "flex",
-    alignItems: "flex-start",
+    // alignItems: "flex-start",
     marginBottom: "1rem",
-    marginTop: "1rem",
+    marginTop: "10rem",
+    // flexWrap: "noWrap",
   },
-  pic: {
-    height: "100%",
-    width: "100%",
-    marginTop: "3rem",
-    marginBottom: "3rem",
-  },
+  // pic: {
+  //   // height: "100%",
+  //   // width: "100%",
+  //   // marginTop: "0rem",
+  //   marginBottom: "3rem",
+  // },
   table: {
     // minWidth: 650,
+  },
+  thumb: {
+    // height: "40%",
+    // width: "40%",
   },
 }));
 
 function Detail(props) {
   const classes = useStyles();
+  const { menus, setMenus, clearMenus } = useContext(MenusContext);
+  const {
+    fetchAgain,
+    setFetchAgain,
+    changeFetchAgain,
+    doNotFetch,
+    setDoNotFetch,
+  } = useContext(MenusContext);
   let { id } = useParams();
   let { path, url } = useRouteMatch();
   const [menuPages, setMenuPages] = useState([]);
-  // const [menuPage, setMenuPage] = useState([]);
+  const [menuMom, setMenuMom] = useState("");
   const [loading, setLoading] = useState(true);
+  const history = useHistory();
   const fetchMenuPages = () => {
     fetch(
       `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/${id}/pages/?&token=${apiKey}`
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data.pages);
         setMenuPages(data.pages);
+        setMenuMom(
+          menus.find((x) => x.id === parseInt(id))
+          // menus.find((x) => x.id === parseInt(data.links[0].href.slice(32)))
+        );
         setLoading(false);
       })
       .catch((e) => {
         console.log(e);
       });
   };
-  // console.log(id);
 
+  // console.log(menuMom);
   useEffect(() => {
     fetchMenuPages();
   }, []);
   return (
     <div>
       {!loading ? (
-        <Router>
-          <div className={classes.root}>
-            <Breadcrumbs
+        <div>
+          <Button
+            onClick={() => {
+              setDoNotFetch(true);
+              history.push("/menus");
+            }}
+          >
+            take me back to my search
+          </Button>
+          <Router>
+            <div className={classes.root}>
+              <Switch>
+                <Route exact path={path}>
+                  <GeneralInfo menu={menuMom} />
+                </Route>
+
+                {menuPages ? (
+                  menuPages.map((page, index) => {
+                    // console.log(page);
+                    return (
+                      <Route
+                        exact
+                        path={`${path}/${page.id}`}
+                        // path={`${path}/:pageId`}
+                        // children={() => <MenuPage menuPage={page} />}
+                        // render={() => <MenuPage menuPage={page}}/>
+                      >
+                        <MenuPage menuPage={page} />
+                      </Route>
+                    );
+                  })
+                ) : (
+                  <p>fail</p>
+                )}
+              </Switch>
+              {/* <Breadcrumbs
               aria-label="breadcrumb"
               className={classes.Breadcrumbs}
-            >
-              {menuPages.map((page, index) => {
-                console.log(`${page}`);
-                return (
-                  <Link color="inherit" to={`${url}/${page.id}`}>
-                    <Typography className={classes.title} variant="h6" noWrap>
-                      {index + 1}
-                    </Typography>
+            > */}
+
+              <Grid container direction="row" className={classes.page}>
+                <Typography className={classes.title} variant="h5" noWrap>
+                  select a menu page
+                </Typography>{" "}
+                <Grid item>
+                  <Link color="inherit" to={`${path}`}>
+                    hi
                   </Link>
-                );
-              })}
-            </Breadcrumbs>
-            <hr />
-
-            <Switch>
-              <Route exact path={path}>
-                <h3>Please select a Menu Page.</h3>
-              </Route>
-
-              {menuPages ? (
-                menuPages.map((page, index) => {
-                  console.log(page);
+                </Grid>
+                {menuPages.map((page, index) => {
+                  // console.log(page);
                   return (
-                    <Route
-                      exact
-                      path={`${path}/${page.id}`}
-                      // path={`${path}/:pageId`}
-                      // children={() => <MenuPage menuPage={page} />}
-                      // render={() => <MenuPage menuPage={page}}/>
-                    >
-                      <MenuPage menuPage={page} />
-                    </Route>
+                    <Grid item>
+                      <Link color="inherit" to={`${url}/${page.id}`}>
+                        {/* <Typography className={classes.title} variant="h6" noWrap>
+                      {index + 1}
+                    </Typography> */}
+                        <img
+                          src={page.thumbnail_src}
+                          className={classes.thumb}
+                        />
+                      </Link>
+                    </Grid>
                   );
-                })
-              ) : (
-                <p>fail</p>
-              )}
-            </Switch>
+                })}
+              </Grid>
+              {/* </Breadcrumbs> */}
+              <hr />
 
-            {/* <Grid container className={classes.page}>
+              {/* <Grid container className={classes.page}>
               <Grid item xs={12} md={6}>
                 <img
                   className={classes.pic}
@@ -133,8 +179,9 @@ function Detail(props) {
                 />
               </Grid>
             </Grid> */}
-          </div>
-        </Router>
+            </div>
+          </Router>
+        </div>
       ) : (
         <Loading />
       )}

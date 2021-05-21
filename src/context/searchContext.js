@@ -21,6 +21,7 @@ export const SearchContextProvider = ({ children }) => {
   };
 
   const changeFetchAgain = () => {
+    console.log(fetchAgain);
     setFetchAgain(true);
   };
   return (

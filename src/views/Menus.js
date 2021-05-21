@@ -8,8 +8,10 @@ import { flexbox } from "@material-ui/system";
 import { GridList } from "@material-ui/core";
 import { GridListTile } from "@material-ui/core";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { SearchContext } from "../context/searchContext";
+// import { SearchContext } from "../context/searchContext";
 import { MenusContext } from "../context/menusContext";
+import { Paper } from "@material-ui/core";
+import Search from "../components/Search.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,31 +32,39 @@ const useStyles = makeStyles((theme) => ({
   menu: {
     // height: "100",
     // width: "100",
-    // margin: "1rem",
+    margin: "1rem",
   },
   pic: {
     height: "100%",
     width: "100%",
+    "-webkit-box-shadow": "5px 5px 15px 5px #000000",
+    boxShadow: "5px 5px 15px 5px #000000",
+    // margin: "1rem",
   },
 }));
 function Menus(props) {
   const { menus, setMenus } = useContext(MenusContext);
   const { loading, setLoading } = useContext(MenusContext);
-  const [resultPage, setResultPage] = useState(1);
+  const { doNotFetch, setDoNotFetch } = useContext(MenusContext);
+  // setLoading(true);
   const {
     searchTerm,
     setSearchTerm,
     clearSearchTerm,
     fetchAgain,
     setFetchAgain,
-  } = useContext(SearchContext);
-  console.log(menus);
+    resultPage,
+    setResultPage,
+    totalPages,
+    setTotalPages,
+    searchSort,
+  } = useContext(MenusContext);
 
   let toFetch;
   searchTerm === ""
-    ? (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${apiKey}&status=complete&page=${resultPage}`)
-    : (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/search?query=${searchTerm}&token=${apiKey}&page=${resultPage}`);
-
+    ? (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${apiKey}&status=complete&page=${resultPage}&sort_by=${searchSort}`)
+    : (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/search?query=${searchTerm}&token=${apiKey}&page=${resultPage}&sort_by=${searchSort}`);
+  console.log(searchSort);
   const classes = useStyles();
   const fetchMenus = () => {
     fetch(toFetch)
@@ -63,12 +73,14 @@ function Menus(props) {
         return response.json();
       })
       .then((data) => {
-        Math.ceil(data.stats.count / 50);
+        setTotalPages(Math.ceil(data.stats.count / 50));
         // let tempMenus = data.menus;
         menus === []
           ? setMenus(data.menus)
           : setMenus([...menus, ...data.menus]);
-        console.log(searchTerm);
+        // menus.forEach((menu) => {
+        //   console.log(`${menu.sponsor},${menu.location}`);
+        // });
         // clearSearchTerm();
         setLoading(false);
       })
@@ -76,17 +88,20 @@ function Menus(props) {
         console.log(e);
       });
   };
-  console.log(fetchAgain);
+  console.log(menus);
   useEffect(() => {
-    fetchMenus();
-  }, [resultPage, fetchAgain]);
+    if (!doNotFetch) {
+      fetchMenus();
+    }
+  }, [resultPage, fetchAgain, searchSort]);
   return (
     <div className={classes.root}>
+      <Search />
       {!loading ? (
         <Grid container spacing={1} className={classes.menusContainer}>
           {menus.map((menu, index) => {
             return (
-              <Link to={`detail/${menu.id}`}>
+              <Link to={`detail/${menu.id}`} className={classes.menu}>
                 <Grid item>
                   <img
                     src={menu.thumbnail_src}
@@ -97,13 +112,16 @@ function Menus(props) {
               </Link>
             );
           })}
-          <button
-            onClick={() => {
-              setResultPage(resultPage + 1);
-            }}
-          >
-            more
-          </button>
+          {resultPage < totalPages && (
+            <button
+              onClick={() => {
+                setDoNotFetch(false);
+                setResultPage(resultPage + 1);
+              }}
+            >
+              more
+            </button>
+          )}
         </Grid>
       ) : (
         <Loading />

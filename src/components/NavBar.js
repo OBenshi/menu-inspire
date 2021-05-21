@@ -11,12 +11,24 @@ import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
 import { NavLink, Redirect, useHistory, useRouteMatch } from "react-router-dom";
-import { SearchContext } from "../context/searchContext";
+// import { SearchContext } from "../context/searchContext";
 import { MenusContext } from "../context/menusContext";
+import Link from "@material-ui/core/Link";
+import Button from "@material-ui/core/Button";
 const useStyles = makeStyles((theme) => ({
+  appBarchen: {
+    background:
+      "radial-gradient(circle, #ff6700, #df3b3e, #ad2751, #722550, #3a1f3b, #3a1f3b, #3a1f3b, #3a1f3b, #722550, #ad2751, #df3b3e, #ff6700)",
+    // "linear-gradient(to right , #ff6700, #ff726a, #ff90af, #ffb6e2, #fdd9fd, #fdd9fd, #fdd9fd, #fdd9fd, #ffb6e2, #ff90af, #ff726a, #ff6700)",
+    // "radial-gradient(circle, #86a8e7, #a4b6eb, #bdc6ef, #d4d6f3, #e8e7f8, #e8e7f8, #e8e7f8, #e8e7f8, #d4d6f3, #bdc6ef, #a4b6eb, #86a8e7)",
+    // "radial-gradient(circle, #ffffff, #eeedfa, #dadcf5, #c5cbf1, #acbced, #acbced, #acbced, #acbced, #c5cbf1, #dadcf5, #eeedfa, #ffffff)",
+  },
   root: {
     flexGrow: 1,
+    // backgroundColor: "#FFFFff",
+    marginBottom: "1rem",
   },
+
   menuButton: {
     marginRight: theme.spacing(2),
   },
@@ -27,10 +39,15 @@ const useStyles = makeStyles((theme) => ({
       display: "block",
     },
   },
+  special: {
+    fontFamily: "Permanent Marker",
+    fontSize: "2rem",
+    color: "orange",
+  },
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
+    backgroundColor: fade(theme.palette.common.black, 0.15),
     "&:hover": {
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
@@ -51,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   inputRoot: {
-    color: "inherit",
+    color: "white",
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
@@ -77,7 +94,10 @@ const useStyles = makeStyles((theme) => ({
   },
   link: {
     display: "inline-flex",
-    // color: "primary",
+    // color: theme.palette.primary.contrastText,
+    color: "white",
+    fontFamily: "Permanent Marker",
+    fontSize: "1.5rem",
   },
   icon: {
     marginRight: theme.spacing(0.5),
@@ -92,22 +112,35 @@ export default function SearchAppBar() {
   const {
     searchTerm,
     setSearchTerm,
+    clearSearchTerm,
     fetchAgain,
     setFetchAgain,
     changeFetchAgain,
-  } = useContext(SearchContext);
+    doNotFetch,
+    setDoNotFetch,
+    resultPage,
+    setResultPage,
+  } = useContext(MenusContext);
   const { clearMenus } = useContext(MenusContext);
   let { path, url } = useRouteMatch();
 
   const handleSearch = (userSearchTerm) => {
-    // setSearchTerm("");
+    setDoNotFetch(false);
     clearMenus();
     setSearchTerm(userSearchTerm);
-    path !== "/menus" ? history.push("/menus") : changeFetchAgain();
+    setResultPage(1);
+    changeFetchAgain();
+    history.push("/menus");
+  };
+
+  const blankIt = () => {
+    clearMenus();
+    clearSearchTerm();
+    setResultPage(1);
   };
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.appBarchen}>
         <Toolbar>
           <IconButton
             edge="start"
@@ -118,29 +151,64 @@ export default function SearchAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            MenuInspire
+            <span className={classes.special}>MenuInspire</span>
           </Typography>
+
           <div>
-            {" "}
+            {/* {" "}
             <Breadcrumbs
               aria-label="breadcrumb"
               className={classes.Breadcrumbs}
               maxItems={9}
               itemsBeforeCollapse={9}
               itemsAfterCollapse={9}
-            >
-              <NavLink to="/" className={classes.link}>
+            > */}
+            {/* <Button> */}
+            {history.location.pathname !== "/" ? (
+              <NavLink
+                to="/"
+                className={classes.link}
+                onClick={() => clearSearchTerm()}
+              >
                 <HomeIcon className={classes.icon} />
                 home
               </NavLink>
-              <NavLink to="/menus" className={classes.link}>
+            ) : (
+              <span className={classes.link}>
+                {" "}
+                <HomeIcon className={classes.icon} />
+                home
+              </span>
+            )}
+            {/* </Button> */}
+
+            {history.location.pathname !== "/menus" ? (
+              <NavLink
+                to="/menus"
+                className={classes.link}
+                onClick={(event) => {
+                  clearMenus();
+                  clearSearchTerm();
+                  setResultPage(1);
+                  changeFetchAgain();
+                  setDoNotFetch(false);
+                  console.log(resultPage, searchTerm);
+                }}
+              >
                 <WhatshotIcon className={classes.icon} />
                 Menus
               </NavLink>
-            </Breadcrumbs>
+            ) : (
+              <span className={classes.link}>
+                {" "}
+                <WhatshotIcon className={classes.icon} />
+                Menus
+              </span>
+            )}
+            {/* </Breadcrumbs> */}
           </div>
-          <div className={classes.search}>
-            <div className={classes.searchIcon} onClick={() => console.log(8)}>
+          {/* <div className={classes.search}>
+            <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
             <InputBase
@@ -156,9 +224,8 @@ export default function SearchAppBar() {
                 eve.key === "Enter" && handleSearch(eve.target.value);
               }}
             />
-          </div>
+          </div> */}
         </Toolbar>
-        <p>{searchTerm}</p>
       </AppBar>
     </div>
   );

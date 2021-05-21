@@ -33,23 +33,25 @@ const useStyles = makeStyles((theme) => ({
   root: {
     // height: "80rem",
     display: "flex",
-    height: "100vh",
-    background: "#ff0000",
+    // height: "100vh",
+    // width: "100vh",
+    // background: "#ff0000",
   },
   page: {
     display: "flex",
     alignItems: "flex-start",
+    justifyContent: "center",
     marginBottom: "1rem",
     marginTop: "1rem",
-    // height: "100%",
-    // width: "100%",
-    background: "#ff0000",
+    height: "100%",
+    width: "100%",
+    // background: "#ff0000",
   },
   pic: {
-    // height: "100%",
-    // width: "100%",
+    height: "100%",
+    width: "100%",
     marginTop: "1rem",
-    marginBottom: "1rem",
+    // marginBottom: "0rem",
   },
   table: {
     // minWidth: 650,
@@ -60,6 +62,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignContent: "center",
     justifyContent: "center",
+    // height: "100%",
+    // width: "100%",
   },
 }));
 
@@ -81,8 +85,8 @@ function MenuPage(props) {
     <div key={pageId} className={classes.root}>
       {menuPage && (
         <Grid container direction="column">
-          <Grid item>
-            <Grid container className={classes.page}>
+          <Grid item className={classes.page}>
+            <Grid container>
               <Grid item xs={12} md={6} className={classes.pagePic}>
                 <img className={classes.pic} src={menuPage.large_src} alt="" />
               </Grid>
