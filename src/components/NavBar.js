@@ -10,11 +10,24 @@ import HomeIcon from "@material-ui/icons/Home";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
-import { NavLink, Redirect, useHistory, useRouteMatch } from "react-router-dom";
+import {
+  NavLink,
+  Link,
+  Redirect,
+  useHistory,
+  useRouteMatch,
+} from "react-router-dom";
 // import { SearchContext } from "../context/searchContext";
 import { MenusContext } from "../context/menusContext";
-import Link from "@material-ui/core/Link";
+// import Link from "@material-ui/core/Link";
 import Button from "@material-ui/core/Button";
+import { ClickAwayListener, Drawer, List, ListItem } from "@material-ui/core";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import InboxIcon from "@material-ui/icons/MoveToInbox";
+import MailIcon from "@material-ui/icons/Mail";
+import Divider from "@material-ui/core/Divider";
+import { useAuth } from "../context/AuthContext";
 const useStyles = makeStyles((theme) => ({
   appBarchen: {
     background:
@@ -104,10 +117,15 @@ const useStyles = makeStyles((theme) => ({
     width: 20,
     height: 20,
   },
+  list: {
+    width: 250,
+  },
 }));
 
 export default function SearchAppBar() {
   const classes = useStyles();
+  const { currentUser, logout } = useAuth();
+  const [error, setError] = useState("");
   const history = useHistory();
   const {
     searchTerm,
@@ -123,6 +141,70 @@ export default function SearchAppBar() {
   } = useContext(MenusContext);
   const { clearMenus } = useContext(MenusContext);
   let { path, url } = useRouteMatch();
+  const [drawerState, setDrawerState] = useState(false);
+
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+
+    setDrawerState(open);
+  };
+  // const toggleDrawer = (open) => (event) => {
+  //   setDrawerState(open);
+  // };
+
+  const list = (anchor) => (
+    <div
+      className={classes.list}
+      role="presentation"
+      onClick={toggleDrawer(anchor, false)}
+      onKeyDown={toggleDrawer(anchor, false)}
+    >
+      <List>
+        <NavLink to="/signup">
+          <ListItem button key={"signup"}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Sign up"} />
+          </ListItem>{" "}
+        </NavLink>
+        <NavLink to="/signin">
+          <ListItem button key={"signin"}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Sign in"} />
+          </ListItem>{" "}
+        </NavLink>
+      </List>
+      <Divider />
+      <List>
+        <ListItem button key={"logout"} onClick={handleLogOut}>
+          <ListItemIcon>
+            <InboxIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Logout"} />
+        </ListItem>{" "}
+      </List>
+    </div>
+  );
+
+  async function handleLogOut() {
+    setError("");
+
+    try {
+      await logout();
+      history.push("/");
+    } catch {
+      setError("Failed to log out");
+      console.log(error);
+    }
+  }
 
   const handleSearch = (userSearchTerm) => {
     setDoNotFetch(false);
@@ -147,14 +229,24 @@ export default function SearchAppBar() {
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
+            onClick={toggleDrawer(true)}
           >
+            {" "}
             <MenuIcon />
-          </IconButton>
+          </IconButton>{" "}
+          <Drawer
+            anchor={"right"}
+            open={drawerState}
+            onClose={toggleDrawer(false)}
+          >
+            {list()}
+          </Drawer>
           <Typography className={classes.title} variant="h6" noWrap>
-            <span className={classes.special}>MenuInspire</span>
+            <span className={classes.special}>Menu</span>
+            <span className={classes.special}>Inspire</span> <sup>*</sup>
           </Typography>
-
           <div>
+            {currentUser && currentUser.email}
             {/* {" "}
             <Breadcrumbs
               aria-label="breadcrumb"

@@ -17,6 +17,11 @@ import {
 } from "@material-ui/core";
 import { SearchContextProvider } from "./context/searchContext";
 import { MenusContextProvider } from "./context/menusContext";
+import SignUp from "./components/SignUp";
+import SignIn from "./components/SignIn";
+import Dashboard from "./components/Dashboard";
+import PrivateRoute from "./components/PrivateRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 const useStyles = makeStyles({
   root: {
@@ -45,24 +50,26 @@ function App() {
   return (
     <Router>
       <ThemeProvider theme={theme}>
-        <CssBaseline />{" "}
-        <MenusContextProvider>
-          {/* <SearchContextProvider> */}
-          <div className={classes.root}>
-            <NavBar />
-            <Switch>
-              <Route exact path="/">
-                <Home />
-              </Route>
-              <Route exact path="/menus">
-                <Menus />
-              </Route>
-              <Route exact path="/detail/:id" children={<Detail />} />
-              {/* <Route exact path="/detail/:id/:pageId"  >children={<MenuPage />} */}
-            </Switch>{" "}
-          </div>{" "}
-          {/* </SearchContextProvider> */}
-        </MenusContextProvider>
+        <CssBaseline />
+        <AuthProvider>
+          <MenusContextProvider>
+            <div className={classes.root}>
+              <NavBar />
+              <Switch>
+                <Route exact path="/signup" children={<SignUp />} />
+                <Route exact path="/signin" children={<SignIn />} />
+                <PrivateRoute
+                  exact
+                  path="/dashboard"
+                  children={<Dashboard />}
+                />
+                <Route exact path="/" children={<Home />} />
+                <Route exact path="/menus" children={<Menus />} />
+                <Route exact path="/detail/:id" children={<Detail />} />
+              </Switch>
+            </div>
+          </MenusContextProvider>
+        </AuthProvider>
       </ThemeProvider>
     </Router>
   );

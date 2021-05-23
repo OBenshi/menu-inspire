@@ -62,8 +62,8 @@ function Menus(props) {
 
   let toFetch;
   searchTerm === ""
-    ? (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${apiKey}&status=complete&page=${resultPage}&sort_by=${searchSort}`)
-    : (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/search?query=${searchTerm}&token=${apiKey}&page=${resultPage}&sort_by=${searchSort}`);
+    ? (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${process.env.REACT_APP_NYPL_API_KEY}&status=complete&page=${resultPage}&sort_by=${searchSort}`)
+    : (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/search?query=${searchTerm}&token=${process.env.REACT_APP_NYPL_API_KEY}&page=${resultPage}&sort_by=${searchSort}`);
   console.log(searchSort);
   const classes = useStyles();
   const fetchMenus = () => {
