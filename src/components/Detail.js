@@ -22,6 +22,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import HomeIcon from "@material-ui/icons/Home";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
+import { useAuth } from "../context/AuthContext";
+import { useDb } from "../context/firestoreContext";
 import { MenusContext } from "../context/menusContext";
 import {
   BrowserRouter as Router,
@@ -75,6 +77,8 @@ function Detail(props) {
   const [menuPages, setMenuPages] = useState([]);
   const [menuMom, setMenuMom] = useState("");
   const [loading, setLoading] = useState(true);
+  const { signup, currentUser } = useAuth();
+  const { addFavorite } = useDb();
   const history = useHistory();
   const fetchMenuPages = () => {
     fetch(
@@ -97,19 +101,15 @@ function Detail(props) {
   // console.log(menuMom);
   useEffect(() => {
     fetchMenuPages();
-  }, []);
+  }, [currentUser]);
   return (
     <div>
       {!loading ? (
         <div>
-          <Button
-            onClick={() => {
-              setDoNotFetch(true);
-              history.push("/menus");
-            }}
-          >
-            take me back to my search
-          </Button>
+          <Button onClick={() => addFavorite(currentUser.uid, menuMom)}>
+            take
+          </Button>{" "}
+          <Button onClick={() => {}}>take me back to my search</Button>
           <Router>
             <div className={classes.root}>
               <Switch>

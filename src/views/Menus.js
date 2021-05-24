@@ -67,6 +67,7 @@ function Menus(props) {
   console.log(searchSort);
   const classes = useStyles();
   const fetchMenus = () => {
+    setLoading(true);
     fetch(toFetch)
       .then((response) => {
         // console.log(bob);
@@ -98,31 +99,35 @@ function Menus(props) {
     <div className={classes.root}>
       <Search />
       {!loading ? (
-        <Grid container spacing={1} className={classes.menusContainer}>
-          {menus.map((menu, index) => {
-            return (
-              <Link to={`detail/${menu.id}`} className={classes.menu}>
-                <Grid item>
-                  <img
-                    src={menu.thumbnail_src}
-                    alt={`${menu.sponsor},${menu.event}`}
-                    className={classes.pic}
-                  />
-                </Grid>
-              </Link>
-            );
-          })}
-          {resultPage < totalPages && (
-            <button
-              onClick={() => {
-                setDoNotFetch(false);
-                setResultPage(resultPage + 1);
-              }}
-            >
-              more
-            </button>
-          )}
-        </Grid>
+        menus.length !== 0 ? (
+          <Grid container spacing={1} className={classes.menusContainer}>
+            {menus.map((menu, index) => {
+              return (
+                <Link to={`detail/${menu.id}`} className={classes.menu}>
+                  <Grid item>
+                    <img
+                      src={menu.thumbnail_src}
+                      alt={`${menu.sponsor},${menu.event}`}
+                      className={classes.pic}
+                    />
+                  </Grid>
+                </Link>
+              );
+            })}
+            {resultPage < totalPages && (
+              <button
+                onClick={() => {
+                  setDoNotFetch(false);
+                  setResultPage(resultPage + 1);
+                }}
+              >
+                more
+              </button>
+            )}
+          </Grid>
+        ) : (
+          <p>no results</p>
+        )
       ) : (
         <Loading />
       )}

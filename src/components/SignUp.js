@@ -5,7 +5,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
+// import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -13,6 +13,14 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useAuth } from "../context/AuthContext";
+import { useDb } from "../context/firestoreContext";
+import {
+  NavLink,
+  Link,
+  Redirect,
+  useHistory,
+  useRouteMatch,
+} from "react-router-dom";
 
 import { Alert } from "@material-ui/lab";
 function Copyright() {
@@ -53,11 +61,15 @@ export default function SignUp() {
   const classes = useStyles();
   const emailRef = useRef();
   const passwordRef = useRef();
+  const history = useHistory();
   const passwordConfirmRef = useRef();
-  const { signup } = useAuth();
+  const firstNameRef = useRef();
+  const lastNameRef = useRef();
+  const { signup, currentUser } = useAuth();
+  const { addNewUser } = useDb();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // console.log(currentUser);
+  // console.log(currentUser.uid);
   async function handleSubmit(event) {
     event.preventDefault();
     // console.log(passwordRef.current.value);
@@ -68,6 +80,14 @@ export default function SignUp() {
       setError("");
       setLoading(true);
       await signup(emailRef.current.value, passwordRef.current.value);
+      await addNewUser(
+        currentUser.uid,
+        firstNameRef.current.value,
+        lastNameRef.current.value,
+        emailRef.current.value,
+        passwordRef.current.value
+      );
+      history.push("/dashboard ");
     } catch {
       return setError("Failed to create an account");
     }
@@ -101,6 +121,7 @@ export default function SignUp() {
                 required
                 fullWidth
                 id="firstName"
+                inputRef={firstNameRef}
                 label="First Name"
                 autoFocus
               />
@@ -111,6 +132,7 @@ export default function SignUp() {
                 required
                 fullWidth
                 id="lastName"
+                inputRef={lastNameRef}
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
@@ -174,7 +196,7 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link to="/signin" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>

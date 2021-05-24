@@ -183,14 +183,16 @@ export default function SearchAppBar() {
         </NavLink>
       </List>
       <Divider />
-      <List>
-        <ListItem button key={"logout"} onClick={handleLogOut}>
-          <ListItemIcon>
-            <InboxIcon />
-          </ListItemIcon>
-          <ListItemText primary={"Logout"} />
-        </ListItem>{" "}
-      </List>
+      {currentUser && (
+        <List>
+          <ListItem button key={"logout"} onClick={handleLogOut}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Logout"} />
+          </ListItem>
+        </List>
+      )}
     </div>
   );
 
@@ -246,7 +248,7 @@ export default function SearchAppBar() {
             <span className={classes.special}>Inspire</span> <sup>*</sup>
           </Typography>
           <div>
-            {currentUser && currentUser.email}
+            {currentUser && currentUser.uid}
             {/* {" "}
             <Breadcrumbs
               aria-label="breadcrumb"

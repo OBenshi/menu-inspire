@@ -16,11 +16,14 @@ export function AuthProvider({ children }) {
 
   const logout = () => auth.signOut();
 
+  const resetPassword = (email) => auth.sendPasswordResetEmail(email);
+
   const value = {
     currentUser,
     signup,
     login,
     logout,
+    resetPassword,
   };
 
   useEffect(() => {

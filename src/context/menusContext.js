@@ -23,7 +23,7 @@ export const MenusContextProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState(initMenusContext.searchTerm);
   const [fetchAgain, setFetchAgain] = useState(initMenusContext.fetchAgain);
   const [resultPage, setResultPage] = useState(initMenusContext.resultPage);
-  const [doNotFetch, setDoNotFetch] = useState(initMenusContext.dodoNotFetch);
+  const [doNotFetch, setDoNotFetch] = useState(initMenusContext.doNotFetch);
   const [totalPages, setTotalPages] = useState(initMenusContext.totalPages);
   const [searchSort, setSearchSort] = useState(initMenusContext.searchSort);
 

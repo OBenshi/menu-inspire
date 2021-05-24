@@ -17,11 +17,13 @@ import {
 } from "@material-ui/core";
 import { SearchContextProvider } from "./context/searchContext";
 import { MenusContextProvider } from "./context/menusContext";
+import { FirestoreContextProvider } from "./context/firestoreContext";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
 import Dashboard from "./components/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
+import ForgotPassword from "./components/ForgotPassword";
 
 const useStyles = makeStyles({
   root: {
@@ -51,25 +53,32 @@ function App() {
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AuthProvider>
-          <MenusContextProvider>
-            <div className={classes.root}>
-              <NavBar />
-              <Switch>
-                <Route exact path="/signup" children={<SignUp />} />
-                <Route exact path="/signin" children={<SignIn />} />
-                <PrivateRoute
-                  exact
-                  path="/dashboard"
-                  children={<Dashboard />}
-                />
-                <Route exact path="/" children={<Home />} />
-                <Route exact path="/menus" children={<Menus />} />
-                <Route exact path="/detail/:id" children={<Detail />} />
-              </Switch>
-            </div>
-          </MenusContextProvider>
-        </AuthProvider>
+        <FirestoreContextProvider>
+          <AuthProvider>
+            <MenusContextProvider>
+              <div className={classes.root}>
+                <NavBar />
+                <Switch>
+                  <Route exact path="/signup" children={<SignUp />} />
+                  <Route exact path="/signin" children={<SignIn />} />
+                  <Route
+                    exact
+                    path="/forgotpassword"
+                    children={<ForgotPassword />}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/dashboard"
+                    children={<Dashboard />}
+                  />
+                  <Route exact path="/" children={<Home />} />
+                  <Route exact path="/menus" children={<Menus />} />
+                  <Route exact path="/detail/:id" children={<Detail />} />
+                </Switch>
+              </div>
+            </MenusContextProvider>
+          </AuthProvider>
+        </FirestoreContextProvider>
       </ThemeProvider>
     </Router>
   );
