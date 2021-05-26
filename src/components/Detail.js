@@ -78,7 +78,7 @@ function Detail(props) {
   const [menuMom, setMenuMom] = useState("");
   const [loading, setLoading] = useState(true);
   const { signup, currentUser } = useAuth();
-  const { addFavorite } = useDb();
+  const { toggleFavorite, getFavs, favs, setFavs, checkIfFav, isFav } = useDb();
   const history = useHistory();
   const fetchMenuPages = () => {
     fetch(
@@ -101,15 +101,27 @@ function Detail(props) {
   // console.log(menuMom);
   useEffect(() => {
     fetchMenuPages();
-  }, [currentUser]);
+    getFavs();
+    checkIfFav(id);
+    console.log("isFav", isFav);
+  }, []);
   return (
     <div>
       {!loading ? (
         <div>
-          <Button onClick={() => addFavorite(currentUser.uid, menuMom)}>
-            take
-          </Button>{" "}
-          <Button onClick={() => {}}>take me back to my search</Button>
+          {currentUser && (
+            <Button onClick={() => toggleFavorite(currentUser.uid, menuMom)}>
+              {isFav ? "like" : "unlike"}
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              setDoNotFetch(true);
+              history.push("/menus");
+            }}
+          >
+            take me back to my search
+          </Button>
           <Router>
             <div className={classes.root}>
               <Switch>

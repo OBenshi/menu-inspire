@@ -53,8 +53,9 @@ function App() {
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <FirestoreContextProvider>
-          <AuthProvider>
+
+        <AuthProvider>
+          <FirestoreContextProvider>
             <MenusContextProvider>
               <div className={classes.root}>
                 <NavBar />
@@ -77,8 +78,8 @@ function App() {
                 </Switch>
               </div>
             </MenusContextProvider>
-          </AuthProvider>
-        </FirestoreContextProvider>
+          </FirestoreContextProvider>
+        </AuthProvider>
       </ThemeProvider>
     </Router>
   );

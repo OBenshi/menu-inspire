@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Menu from "../components/Menu.js";
+import { useDb } from "../context/firestoreContext";
 import Loading from "../components/Loading.js";
 import apiKey from "../key.js";
 import { Grid } from "@material-ui/core";
@@ -43,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 function Menus(props) {
+  const { favs, getFavs } = useDb();
   const { menus, setMenus } = useContext(MenusContext);
   const { loading, setLoading } = useContext(MenusContext);
   const { doNotFetch, setDoNotFetch } = useContext(MenusContext);
@@ -64,7 +66,7 @@ function Menus(props) {
   searchTerm === ""
     ? (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${process.env.REACT_APP_NYPL_API_KEY}&status=complete&page=${resultPage}&sort_by=${searchSort}`)
     : (toFetch = `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/search?query=${searchTerm}&token=${process.env.REACT_APP_NYPL_API_KEY}&page=${resultPage}&sort_by=${searchSort}`);
-  console.log(searchSort);
+  // console.log(searchSort);
   const classes = useStyles();
   const fetchMenus = () => {
     setLoading(true);
@@ -89,11 +91,12 @@ function Menus(props) {
         console.log(e);
       });
   };
-  console.log(menus);
+  // console.log(menus);
   useEffect(() => {
     if (!doNotFetch) {
       fetchMenus();
     }
+    getFavs();
   }, [resultPage, fetchAgain, searchSort]);
   return (
     <div className={classes.root}>
@@ -103,15 +106,16 @@ function Menus(props) {
           <Grid container spacing={1} className={classes.menusContainer}>
             {menus.map((menu, index) => {
               return (
-                <Link to={`detail/${menu.id}`} className={classes.menu}>
-                  <Grid item>
-                    <img
-                      src={menu.thumbnail_src}
-                      alt={`${menu.sponsor},${menu.event}`}
-                      className={classes.pic}
-                    />
-                  </Grid>
-                </Link>
+                <Menu menu={menu} />
+                // <Link to={`detail/${menu.id}`} className={classes.menu}>
+                //   <Grid item>
+                //     <img
+                //       src={menu.thumbnail_src}
+                //       alt={`${menu.sponsor},${menu.event}`}
+                //       className={classes.pic}
+                //     />
+                //   </Grid>
+                // </Link>
               );
             })}
             {resultPage < totalPages && (

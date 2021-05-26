@@ -164,24 +164,26 @@ export default function SearchAppBar() {
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
     >
-      <List>
-        <NavLink to="/signup">
-          <ListItem button key={"signup"}>
-            <ListItemIcon>
-              <InboxIcon />
-            </ListItemIcon>
-            <ListItemText primary={"Sign up"} />
-          </ListItem>{" "}
-        </NavLink>
-        <NavLink to="/signin">
-          <ListItem button key={"signin"}>
-            <ListItemIcon>
-              <InboxIcon />
-            </ListItemIcon>
-            <ListItemText primary={"Sign in"} />
-          </ListItem>{" "}
-        </NavLink>
-      </List>
+      {!currentUser && (
+        <List>
+          <NavLink to="/signup">
+            <ListItem button key={"signup"}>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Sign up"} />
+            </ListItem>{" "}
+          </NavLink>
+          <NavLink to="/signin">
+            <ListItem button key={"signin"}>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Sign in"} />
+            </ListItem>{" "}
+          </NavLink>
+        </List>
+      )}
       <Divider />
       {currentUser && (
         <List>

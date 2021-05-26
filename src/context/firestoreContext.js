@@ -1,6 +1,8 @@
 // 1. import the modules
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { db } from "../firebase";
+import firebase from "firebase/app";
+import { useAuth } from "./AuthContext";
 // 2. initialize the context
 // const initDbContext = {
 //   menus: [],
@@ -20,31 +22,76 @@ export const useDb = () => useContext(FirestoreContext);
 
 // 4. make provider => value / children
 export const FirestoreContextProvider = ({ children }) => {
-  const addNewUser = (uid, firstName, lastName, email, password) =>
-    db
-      .collection("users")
-      .doc(uid)
-      .set({
-        first: firstName,
-        last: lastName,
-        email: email,
-        password: password,
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
-      });
+  const { currentUser } = useAuth();
+  const [favs, setFavs] = useState([]);
+  const [isFav, setIsFav] = useState(null);
+  // console.log(currentUser.uid);
 
-  const addFavorite = (uid, menu) =>
-    db
-      .collection("users")
-      .doc(uid)
-      .collection(`${uid}-favorites`)
-      .add(menu)
-      .catch((error) => {
-        console.error("Error adding favorite", error);
-      });
+  const getFavs = async () => {
+    // setCurrentUser(user);
+    // console.log(user);
+    if (currentUser) {
+      const doc = await db.collection("users").doc(currentUser.uid).get();
+      console.log(doc);
+      if (!doc.exists) {
+        console.log("No such document!");
+      } else {
+        console.log("!!B4!! Document data:", doc.data().favs, "favs:", favs);
+        setFavs(doc.data().favs);
+        console.log("Document data:", doc.data().favs, "favs:", favs);
+      }
+    }
+  };
+
+  const checkIfFav = (menuId) => {
+    favs.find((x) => x.id === parseInt(menuId))
+      ? setIsFav(true)
+      : setIsFav(false);
+    console.log("isFav", isFav);
+  };
+
+  const toggleFavorite = (uid, menu) => {
+    // console.log("§§favs§§", favs);
+    // console.log(favs.find((x) => x.id === parseInt(menu.id)));
+    !isFav
+      ? db
+          .collection("users")
+          .doc(uid)
+          .update({
+            favs: firebase.firestore.FieldValue.arrayUnion(menu),
+          })
+      : db
+          .collection("users")
+          .doc(uid)
+          .update({
+            favs: firebase.firestore.FieldValue.arrayRemove(menu),
+          });
+    setIsFav(!isFav);
+    // console.log(`${favs}`);
+  };
+
+  // useEffect(() => {
+  //   const getFavs = async () => {
+  //     // setCurrentUser(user);
+  //     // console.log(user);
+  //     if (currentUser) {
+  //       const doc = await db.collection("users").doc(currentUser.uid).get();
+  //       console.log(doc);
+  //       if (!doc.exists) {
+  //         console.log("No such document!");
+  //       } else {
+  //         console.log("!!B4!! Document data:", doc.data().favs, "favs:", favs);
+  //         setFavs(doc.data().favs);
+  //         console.log("Document data:", doc.data().favs, "favs:", favs);
+  //       }
+  //     }
+  //   };
+  //   getFavs();
+  // }, []);
   return (
-    <FirestoreContext.Provider value={{ addNewUser, addFavorite }}>
+    <FirestoreContext.Provider
+      value={{ toggleFavorite, getFavs, favs, checkIfFav, isFav }}
+    >
       {children}
     </FirestoreContext.Provider>
   );

@@ -13,7 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useAuth } from "../context/AuthContext";
-import { useDb } from "../context/firestoreContext";
+// import { useDb } from "../context/firestoreContext";
 import {
   NavLink,
   Link,
@@ -66,7 +66,7 @@ export default function SignUp() {
   const firstNameRef = useRef();
   const lastNameRef = useRef();
   const { signup, currentUser } = useAuth();
-  const { addNewUser } = useDb();
+  // const { addNewUser } = useDb();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   // console.log(currentUser.uid);
@@ -79,15 +79,25 @@ export default function SignUp() {
     try {
       setError("");
       setLoading(true);
-      await signup(emailRef.current.value, passwordRef.current.value);
-      await addNewUser(
-        currentUser.uid,
+      await signup(
         firstNameRef.current.value,
         lastNameRef.current.value,
         emailRef.current.value,
         passwordRef.current.value
       );
-      history.push("/dashboard ");
+      // .then(
+      //   () => console.log(currentUser)
+      //   // addNewUser(
+      //   //   currentUser.uid,
+      //   //   firstNameRef.current.value,
+      //   //   lastNameRef.current.value,
+      //   //   emailRef.current.value,
+      //   //   passwordRef.current.value
+      //   // )
+      // )
+      // .catch((error) => console.log(error));
+
+      console.log(currentUser);
     } catch {
       return setError("Failed to create an account");
     }

@@ -32,7 +32,7 @@ import {
 } from "react-router-dom";
 
 function GeneralInfo(props) {
-  const menu = props.menu;
+  const menu = props;
   console.log(menu);
 
   return (
