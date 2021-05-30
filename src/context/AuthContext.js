@@ -16,6 +16,8 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const history = useHistory();
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [lastScrollX, setLastScrollX] = useState(0);
   // const [favs, setFavs] = useState([]);
 
   const addNewUser = (uid, firstName, lastName, email, password) =>
@@ -55,9 +57,13 @@ export function AuthProvider({ children }) {
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((user) => {
+        user.user.updateProfile({
+          displayName: firstName,
+        });
         console.log(user);
         addNewUser(user.user.uid, firstName, lastName, email, password);
       })
+
       .catch((e) => {
         console.log(e);
       });
@@ -75,6 +81,10 @@ export function AuthProvider({ children }) {
     login,
     logout,
     resetPassword,
+    lastScrollX,
+    setLastScrollX,
+    lastScrollY,
+    setLastScrollY,
     // favs,
     // setFavs,
   };
