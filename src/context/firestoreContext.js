@@ -70,24 +70,6 @@ export const FirestoreContextProvider = ({ children }) => {
     // console.log(`${favs}`);
   };
 
-  // useEffect(() => {
-  //   const getFavs = async () => {
-  //     // setCurrentUser(user);
-  //     // console.log(user);
-  //     if (currentUser) {
-  //       const doc = await db.collection("users").doc(currentUser.uid).get();
-  //       console.log(doc);
-  //       if (!doc.exists) {
-  //         console.log("No such document!");
-  //       } else {
-  //         console.log("!!B4!! Document data:", doc.data().favs, "favs:", favs);
-  //         setFavs(doc.data().favs);
-  //         console.log("Document data:", doc.data().favs, "favs:", favs);
-  //       }
-  //     }
-  //   };
-  //   getFavs();
-  // }, []);
   return (
     <FirestoreContext.Provider
       value={{ toggleFavorite, getFavs, favs, checkIfFav, isFav }}

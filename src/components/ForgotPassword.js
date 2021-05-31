@@ -129,7 +129,6 @@ export default function ForgotPassword() {
             Reset Password
           </Button>
           <Grid container justify="center" direction="row">
-            {" "}
             <Grid item xs={6}>
               <Link to="/signin" variant="body2">
                 Login
