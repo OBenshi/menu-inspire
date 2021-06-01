@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import HomeIcon from "@material-ui/icons/Home";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
+import Search from "../components/Search";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
 import {
   NavLink,
@@ -51,6 +52,10 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       display: "block",
     },
+    // background: "rgba(255, 184, 226, 0.8)",
+  },
+  drawerLogo: {
+    background: "rgba(255, 184, 226, 0.2)",
   },
   special: {
     fontFamily: "Permanent Marker",
@@ -107,10 +112,19 @@ const useStyles = makeStyles((theme) => ({
   },
   link: {
     display: "inline-flex",
-    // color: theme.palette.primary.contrastText,
-    color: "white",
+    color: theme.palette.secondary.contrastText,
+    // color: "white",
     fontFamily: "Permanent Marker",
     fontSize: "1.5rem",
+    textDecoration: "none",
+  },
+  linkDisabled: {
+    display: "inline-flex",
+    color: theme.palette.secondary.contrastText,
+    // color: "white",
+    fontFamily: "Permanent Marker",
+    fontSize: "1.5rem",
+    textDecoration: "underline",
   },
   icon: {
     marginRight: theme.spacing(0.5),
@@ -118,7 +132,13 @@ const useStyles = makeStyles((theme) => ({
     height: 20,
   },
   list: {
-    width: 250,
+    width: 230,
+    background: "rgba(255, 184, 226, 0.2)",
+  },
+  drawerList: {
+    paper: {
+      background: "#ff0000",
+    },
   },
 }));
 
@@ -187,6 +207,15 @@ export default function SearchAppBar() {
       <Divider />
       {currentUser && (
         <List>
+          {" "}
+          <NavLink to="/dashboard">
+            <ListItem button key={"dashboard"}>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary={`${currentUser.displayName} Zone`} />
+            </ListItem>
+          </NavLink>
           <ListItem button key={"logout"} onClick={handleLogOut}>
             <ListItemIcon>
               <InboxIcon />
@@ -242,7 +271,13 @@ export default function SearchAppBar() {
             anchor={"right"}
             open={drawerState}
             onClose={toggleDrawer(false)}
+            className={classes.drawerList}
+            elevation={25}
           >
+            <Typography variant="h6" align="center" noWrap color="primary">
+              <span className={classes.special}>Menu</span>
+              <span className={classes.special}>Inspire</span> <sup>*</sup>
+            </Typography>
             {list()}
           </Drawer>
           <Typography className={classes.title} variant="h6" noWrap>
@@ -250,16 +285,7 @@ export default function SearchAppBar() {
             <span className={classes.special}>Inspire</span> <sup>*</sup>
           </Typography>
           <div>
-            {currentUser && currentUser.uid}
-            {/* {" "}
-            <Breadcrumbs
-              aria-label="breadcrumb"
-              className={classes.Breadcrumbs}
-              maxItems={9}
-              itemsBeforeCollapse={9}
-              itemsAfterCollapse={9}
-            > */}
-            {/* <Button> */}
+            {/* {currentUser && currentUser.uid} */}
             {history.location.pathname !== "/" ? (
               <NavLink
                 to="/"
@@ -270,14 +296,12 @@ export default function SearchAppBar() {
                 home
               </NavLink>
             ) : (
-              <span className={classes.link}>
+              <span className={classes.linkDisabled}>
                 {" "}
                 <HomeIcon className={classes.icon} />
                 home
               </span>
             )}
-            {/* </Button> */}
-
             {history.location.pathname !== "/menus" ? (
               <NavLink
                 to="/menus"
@@ -295,33 +319,30 @@ export default function SearchAppBar() {
                 Menus
               </NavLink>
             ) : (
-              <span className={classes.link}>
-                {" "}
+              <span className={classes.linkDisabled}>
                 <WhatshotIcon className={classes.icon} />
                 Menus
               </span>
-            )}
-            {/* </Breadcrumbs> */}
-          </div>
-          {/* <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              id="mainSearch"
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ "aria-label": "search" }}
-              onKeyUp={(eve) => {
-                // console.log(eve.key);
-                eve.key === "Enter" && handleSearch(eve.target.value);
-              }}
-            />
-          </div> */}
-        </Toolbar>
+            )}{" "}
+            {currentUser &&
+              (history.location.pathname !== "/Favourites" ? (
+                <NavLink
+                  to="/Favourites"
+                  className={classes.link}
+                  onClick={() => clearSearchTerm()}
+                >
+                  <HomeIcon className={classes.icon} />
+                  {`${currentUser.displayName}'s Favourites`}
+                </NavLink>
+              ) : (
+                <span className={classes.linkDisabled}>
+                  <HomeIcon className={classes.icon} />
+                  {`${currentUser.displayName}'s Favourites`}
+                </span>
+              ))}
+          </div>{" "}
+        </Toolbar>{" "}
+        {history.location.pathname === "/menus" && <Search />}
       </AppBar>
     </div>
   );
