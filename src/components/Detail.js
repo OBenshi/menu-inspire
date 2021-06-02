@@ -1,97 +1,95 @@
-import React, { useState, useEffect, useContext } from "react";
-import MenuPage from "../components/MenuPage.js";
-import apiKey from "../key.js";
-import { useParams } from "react-router-dom";
-import { Button, Grid } from "@material-ui/core";
-import Loading from "../components/Loading.js";
+import { Button, Grid, IconButton, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import InputBase from "@material-ui/core/InputBase";
-import MenuIcon from "@material-ui/icons/Menu";
-import SearchIcon from "@material-ui/icons/Search";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import HomeIcon from "@material-ui/icons/Home";
-import WhatshotIcon from "@material-ui/icons/Whatshot";
-import { useAuth } from "../context/AuthContext";
-import { useDb } from "../context/firestoreContext";
-import { MenusContext } from "../context/menusContext";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import React, { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
   Link,
-  NavLink,
+  Route,
+  Switch,
   useHistory,
+  useParams,
   useRouteMatch,
 } from "react-router-dom";
 import GeneralInfo from "../components/GeneralInfo";
+import Loading from "../components/Loading.js";
+import MenuPage from "../components/MenuPage.js";
+import { useAuth } from "../context/AuthContext";
+import { useDb } from "../context/firestoreContext";
+import { MenusContext } from "../context/menusContext";
+import apiKey from "../key.js";
+import ScrollToTop from "./ScrollTop";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
+    paddingBottom: "12rem",
   },
   page: {
     display: "flex",
     // alignItems: "flex-start",
     marginBottom: "1rem",
-    marginTop: "10rem",
+    // marginTop: "10rem",
     // flexWrap: "noWrap",
+    justifyContent: "center",
   },
-  // pic: {
-  //   // height: "100%",
-  //   // width: "100%",
-  //   // marginTop: "0rem",
-  //   marginBottom: "3rem",
-  // },
-  table: {
-    // minWidth: 650,
+  table: {},
+  thumb: {},
+  bob: {
+    display: "flex",
+    margin: "none",
   },
-  thumb: {
-    // height: "40%",
-    // width: "40%",
+  kol: {
+    height: "100%",
+  },
+  favButton: {
+    display: "flex",
+    justifyContent: "center",
   },
 }));
 
 function Detail(props) {
   const classes = useStyles();
-  const { menus, setMenus, clearMenus } = useContext(MenusContext);
-  const {
-    fetchAgain,
-    setFetchAgain,
-    changeFetchAgain,
-    doNotFetch,
-    setDoNotFetch,
-  } = useContext(MenusContext);
+  const { menus, setDoNotFetch } = useContext(MenusContext);
   let { id } = useParams();
   let { path, url } = useRouteMatch();
   const [menuPages, setMenuPages] = useState([]);
-  const [menuMom, setMenuMom] = useState("");
+  const [menuMom, setMenuMom] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { signup, currentUser } = useAuth();
-  const { toggleFavorite, getFavs, favs, setFavs, checkIfFav, isFav } = useDb();
+  const { currentUser } = useAuth();
+  const { toggleFavorite, getFavs, favs, checkIfFav, isFav } = useDb();
   const history = useHistory();
   const fetchMenuPages = () => {
     fetch(
-      `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/${id}/pages/?&token=${apiKey}`
+      `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/${id}/pages/?&token=${process.env.REACT_APP_NYPL_API_KEY}`
     )
       .then((response) => response.json())
       .then((data) => {
         setMenuPages(data.pages);
-        setMenuMom(
-          menus.find((x) => x.id === parseInt(id))
-          // menus.find((x) => x.id === parseInt(data.links[0].href.slice(32)))
-        );
-        setLoading(false);
+        if (menus.length !== 0) {
+          setMenuMom(menus.find((x) => x.id === parseInt(id)));
+        } else {
+          console.log(favs.find((x) => x.id === parseInt(id)));
+          setMenuMom(favs.find((x) => x.id === parseInt(id)));
+          console.log(menuMom);
+        }
+        if (menuMom === null) {
+          fetch(
+            `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus/${id}?&token=${process.env.REACT_APP_NYPL_API_KEY}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              setMenuMom(data);
+              setLoading(false);
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        } else {
+          setLoading(false);
+        }
       })
       .catch((e) => {
         console.log(e);
@@ -103,29 +101,69 @@ function Detail(props) {
     fetchMenuPages();
     getFavs();
     checkIfFav(id);
-    console.log("isFav", isFav);
+    console.log("user is", currentUser);
   }, []);
   return (
-    <div>
+    <div className={classes.kol} key={`${id}div`}>
       {!loading ? (
-        <div>
-          {currentUser && (
-            <Button onClick={() => toggleFavorite(currentUser.uid, menuMom)}>
-              {isFav ? "like" : "unlike"}
-            </Button>
-          )}
-          <Button
-            onClick={() => {
-              setDoNotFetch(true);
-              history.push("/menus");
-            }}
-          >
-            take me back to my search
-          </Button>
+        <div className={classes.root}>
+          {" "}
           <Router>
+            <Grid container justify="center">
+              {" "}
+              {menus.length > 0 && (
+                <Grid item xs={5}>
+                  <Button
+                    onClick={() => {
+                      setDoNotFetch(true);
+                      history.push("/menus");
+                    }}
+                    variant="contained"
+                    color="primary"
+                  >
+                    <Typography>Back to my search</Typography>
+                  </Button>
+                </Grid>
+              )}{" "}
+              <Grid item xs={5}>
+                <Link color="inherit" to={`${path}`}>
+                  <Button variant="contained" color="primary">
+                    <Typography>Info about this menu</Typography>
+                  </Button>{" "}
+                </Link>
+              </Grid>
+              {currentUser !== null && (
+                <Grid item xs={12} className={classes.favButton}>
+                  {isFav ? (
+                    <Tooltip title="Add Favorite">
+                      <IconButton
+                        onClick={() => toggleFavorite(currentUser.uid, menuMom)}
+                        aria-label="Add Favorite"
+                        color="primary"
+                      >
+                        <FavoriteBorderIcon />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Remove Favorite">
+                      <IconButton
+                        onClick={() => toggleFavorite(currentUser.uid, menuMom)}
+                        aria-label="Remove Favorite"
+                        color="primary"
+                      >
+                        <FavoriteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Grid>
+              )}
+            </Grid>{" "}
             <div className={classes.root}>
               <Switch>
                 <Route exact path={path}>
+                  {" "}
+                  <ScrollToTop />
+                  {/* {console.log("menuMom is", menuMom)} */}
                   <GeneralInfo menu={menuMom} />
                 </Route>
 
@@ -136,145 +174,55 @@ function Detail(props) {
                       <Route
                         exact
                         path={`${path}/${page.id}`}
-                        // path={`${path}/:pageId`}
-                        // children={() => <MenuPage menuPage={page} />}
-                        // render={() => <MenuPage menuPage={page}}/>
+                        key={index * page.id}
                       >
-                        <MenuPage menuPage={page} />
+                        <ScrollToTop />
+                        <MenuPage
+                          menuPage={page}
+                          currency={menuMom.currency_symbol}
+                        />
                       </Route>
                     );
                   })
                 ) : (
                   <p>fail</p>
                 )}
-              </Switch>
-              {/* <Breadcrumbs
-              aria-label="breadcrumb"
-              className={classes.Breadcrumbs}
-            > */}
-
+              </Switch>{" "}
               <Grid container direction="row" className={classes.page}>
-                <Typography className={classes.title} variant="h5" noWrap>
-                  select a menu page
-                </Typography>{" "}
-                <Grid item>
-                  <Link color="inherit" to={`${path}`}>
-                    hi
-                  </Link>
-                </Grid>
                 {menuPages.map((page, index) => {
                   // console.log(page);
                   return (
-                    <Grid item>
-                      <Link color="inherit" to={`${url}/${page.id}`}>
-                        {/* <Typography className={classes.title} variant="h6" noWrap>
-                      {index + 1}
-                    </Typography> */}
-                        <img
-                          src={page.thumbnail_src}
+                    <Grid
+                      item
+                      className={classes.bob}
+                      key={`${menuMom.sponsor} Menu, page number ${page.page_number}`}
+                    >
+                      <Tooltip
+                        title={`${menuMom.sponsor} Menu, page number ${page.page_number}`}
+                      >
+                        <Link
+                          color="inherit"
+                          to={`${url}/${page.id}`}
                           className={classes.thumb}
-                        />
-                      </Link>
+                        >
+                          <img
+                            key={`${id}pagediv`}
+                            src={page.thumbnail_src}
+                            alt={`${menuMom.sponsor} Menu, page number ${page.page_number}`}
+                          />
+                        </Link>
+                      </Tooltip>
                     </Grid>
                   );
                 })}
               </Grid>
-              {/* </Breadcrumbs> */}
-              <hr />
-
-              {/* <Grid container className={classes.page}>
-              <Grid item xs={12} md={6}>
-                <img
-                  className={classes.pic}
-                  src={menuPages[0].large_src}
-                  alt=""
-                />
-              </Grid>
-            </Grid> */}
             </div>
           </Router>
         </div>
       ) : (
         <Loading />
       )}
-
-      {/* <Grid container direction="column">
-        {!loading ? (
-          menuPages.map((page, index) => {
-            return (
-              <Grid item>
-                <Grid container className={classes.page}>
-                  <Grid item xs={12} md={6}>
-                    <img className={classes.pic} src={page.large_src} alt="" />
-                  </Grid>
-                  {page.dishes !== [] && (
-                    <Grid item className={classes.pic} xs={12} md={6}>
-                      <TableContainer component={Paper}>
-                        <Table
-                          className={classes.table}
-                          aria-label="simple table"
-                        >
-                          <TableBody>
-                            {page.dishes.map((dish) => (
-                              <TableRow key={dish.name}>
-                                <TableCell component="th" scope="row">
-                                  {dish.name}
-                                </TableCell>
-                                {dish.price && (
-                                  <TableCell align="right">
-                                    {dish.price}$
-                                  </TableCell>
-                                )}
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    </Grid>
-                  )}
-                </Grid>
-              </Grid>
-            );
-          })
-        ) : (
-          <Loading />
-        )}
-      </Grid> */}
     </div>
   );
 }
 export default Detail;
-
-/* function Topics() {
-  // The `path` lets us build <Route> paths that are
-  // relative to the parent route, while the `url` lets
-  // us build relative links.
-  let { path, url } = useRouteMatch();
-
-  return (
-    <div>
-      <h2>Topics</h2>
-      <ul>
-        <li>
-          <Link to={`${url}/rendering`}>Rendering with React</Link>
-        </li>
-        <li>
-          <Link to={`${url}/components`}>Components</Link>
-        </li>
-        <li>
-          <Link to={`${url}/props-v-state`}>Props v. State</Link>
-        </li>
-      </ul>
-
-      <Switch>
-        <Route exact path={path}>
-          <h3>Please select a topic.</h3>
-        </Route>
-        <Route path={`${path}/:topicId`}>
-          <Topic />
-        </Route>
-      </Switch>
-    </div>
-  );
-}
- */

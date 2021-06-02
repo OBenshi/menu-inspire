@@ -1,26 +1,23 @@
-import React, { useState, useEffect, useContext } from "react";
-import Menu from "../components/Menu.js";
-import { useDb } from "../context/firestoreContext";
-import Loading from "../components/Loading.js";
-import apiKey from "../key.js";
-import { Grid } from "@material-ui/core";
+import { Fab, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { flexbox } from "@material-ui/system";
-import { GridList } from "@material-ui/core";
-import { GridListTile } from "@material-ui/core";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import React, { useContext, useEffect, useState } from "react";
+import Loading from "../components/Loading.js";
+import Menu from "../components/Menu.js";
+import Search from "../components/Search.js";
+import { useDb } from "../context/firestoreContext";
 // import { SearchContext } from "../context/searchContext";
 import { MenusContext } from "../context/menusContext";
-import { Paper } from "@material-ui/core";
-import Search from "../components/Search.js";
+import { useAuth } from "../context/AuthContext";
+// import ScrollToTopOnMount from "../components/ScrollTopOnMount.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexWrap: "wrap",
-
     overflow: "hidden",
-    // backgroundColor: theme.palette.background.paper,
+    background:
+      "radial-gradient(circle, #ff6700, #ff726a, #ff90af, #ffb6e2, #fdd9fd, #fdd9fd, #fdd9fd, #fdd9fd, #ffb6e2, #ff90af, #ff726a, #ff6700)",
   },
   menusContainer: {
     display: "flex",
@@ -36,11 +33,18 @@ const useStyles = makeStyles((theme) => ({
     margin: "1rem",
   },
   pic: {
-    height: "100%",
-    width: "100%",
+    // height: "100%",
+    // width: "100%",
     "-webkit-box-shadow": "5px 5px 15px 5px #000000",
     boxShadow: "5px 5px 15px 5px #000000",
     // margin: "1rem",
+  },
+  loadMore: {
+    margin: "1rem",
+  },
+  fabiIcon: {
+    // margin: "6rem",
+    color: theme.palette.primary.dark,
   },
 }));
 function Menus(props) {
@@ -48,6 +52,8 @@ function Menus(props) {
   const { menus, setMenus } = useContext(MenusContext);
   const { loading, setLoading } = useContext(MenusContext);
   const { doNotFetch, setDoNotFetch } = useContext(MenusContext);
+  const { lastScrollX, setLastScrollX } = useAuth();
+  const { lastScrollY, setLastScrollY } = useAuth();
   // setLoading(true);
   const {
     searchTerm,
@@ -69,7 +75,9 @@ function Menus(props) {
   // console.log(searchSort);
   const classes = useStyles();
   const fetchMenus = () => {
-    setLoading(true);
+    if (menus.length === 0) {
+      setLoading(true);
+    }
     fetch(toFetch)
       .then((response) => {
         // console.log(bob);
@@ -77,14 +85,9 @@ function Menus(props) {
       })
       .then((data) => {
         setTotalPages(Math.ceil(data.stats.count / 50));
-        // let tempMenus = data.menus;
         menus === []
           ? setMenus(data.menus)
           : setMenus([...menus, ...data.menus]);
-        // menus.forEach((menu) => {
-        //   console.log(`${menu.sponsor},${menu.location}`);
-        // });
-        // clearSearchTerm();
         setLoading(false);
       })
       .catch((e) => {
@@ -96,37 +99,40 @@ function Menus(props) {
     if (!doNotFetch) {
       fetchMenus();
     }
+
     getFavs();
   }, [resultPage, fetchAgain, searchSort]);
   return (
     <div className={classes.root}>
-      <Search />
+      {/* <Search /> */}
       {!loading ? (
+        // ((<ScrollToTopOnMount />),
         menus.length !== 0 ? (
           <Grid container spacing={1} className={classes.menusContainer}>
             {menus.map((menu, index) => {
-              return (
-                <Menu menu={menu} />
-                // <Link to={`detail/${menu.id}`} className={classes.menu}>
-                //   <Grid item>
-                //     <img
-                //       src={menu.thumbnail_src}
-                //       alt={`${menu.sponsor},${menu.event}`}
-                //       className={classes.pic}
-                //     />
-                //   </Grid>
-                // </Link>
-              );
+              return <Menu menu={menu} key={`${index}-${menu.sponsor}`} />;
             })}
             {resultPage < totalPages && (
-              <button
-                onClick={() => {
-                  setDoNotFetch(false);
-                  setResultPage(resultPage + 1);
-                }}
+              <Grid
+                container
+                justify="center"
+                align="center"
+                className={classes.loadMore}
               >
-                more
-              </button>
+                <Grid item xs={12}>
+                  <Fab color="secondary" size="large" aria-label="add">
+                    <AddCircleIcon
+                      className={classes.fabiIcon}
+                      onClick={(e) => {
+                        console.log(window.screenX, window.screenY);
+                        e.preventDefault();
+                        setDoNotFetch(false);
+                        setResultPage(resultPage + 1);
+                      }}
+                    />
+                  </Fab>
+                </Grid>
+              </Grid>
             )}
           </Grid>
         ) : (

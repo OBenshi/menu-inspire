@@ -6,7 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 2,
-    color: "#ff0000",
+    color: theme.palette.secondary.main,
+    backgroundColor: "rgba(230, 163, 202, 0.5)",
     // position: "absolute",
   },
 }));
@@ -16,7 +17,7 @@ function Loading() {
   return (
     <div>
       <Backdrop className={classes.backdrop} open={true}>
-        <CircularProgress color="inherit" />
+        <CircularProgress color="primary" />
       </Backdrop>
     </div>
   );

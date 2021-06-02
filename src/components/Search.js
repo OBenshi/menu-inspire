@@ -1,25 +1,26 @@
-import { Grid } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormLabel from "@material-ui/core/FormLabel";
 import InputBase from "@material-ui/core/InputBase";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useContext } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 // import { SearchContext } from "../context/searchContext";
 import { MenusContext } from "../context/menusContext";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
 const useStyles = makeStyles((theme) => ({
-  root: {
-    background:
-      "radial-gradient(circle, #ff6700, #df3b3e, #ad2751, #722550, #3a1f3b, #3a1f3b, #3a1f3b, #3a1f3b, #722550, #ad2751, #df3b3e, #ff6700)",
+  searchBar: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
-
+  root: {
+    marginBottom: "1rem",
+    background: "tranparent",
+  },
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -48,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create("width"),
     width: "100%",
@@ -73,25 +73,17 @@ const useStyles = makeStyles((theme) => ({
 
 function Search(props) {
   const classes = useStyles();
-  //   const [SearchSort, setSearchSort] = React.useState("relevance");
-  const history = useHistory();
   const {
     searchTerm,
     setSearchTerm,
-    clearSearchTerm,
-    fetchAgain,
-    setFetchAgain,
     changeFetchAgain,
-    doNotFetch,
     setDoNotFetch,
-    resultPage,
     setResultPage,
     searchSort,
     setSearchSort,
     loading,
   } = useContext(MenusContext);
   const { clearMenus } = useContext(MenusContext);
-  let { path, url } = useRouteMatch();
 
   const handleSearch = (userSearchTerm) => {
     setDoNotFetch(false);
@@ -109,29 +101,39 @@ function Search(props) {
   };
 
   return (
-    <Grid container className={classes.root}>
-      <Grid item>
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <SearchIcon />
-          </div>
-          <InputBase
-            id="mainSearch"
-            placeholder="Search…"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-            inputProps={{ "aria-label": "search" }}
-            onKeyUp={(eve) => {
-              // console.log(eve.key);
-              eve.key === "Enter" && handleSearch(eve.target.value);
-            }}
-          />
-        </div>
-      </Grid>{" "}
-      {!loading && (
+    !loading && (
+      <Grid container className={classes.searchBar}>
         <Grid item>
+          <Typography
+            // align="left"
+            color="textSecondary"
+            variantMapping={{ h5: "h2" }}
+            variant="h4"
+          >
+            <i> Find a menu</i>
+          </Typography>
+        </Grid>{" "}
+        <Grid item>
+          <div className={classes.search}>
+            <div className={classes.searchIcon}>
+              <SearchIcon />
+            </div>
+            <InputBase
+              id="mainSearch"
+              placeholder="Search…"
+              classes={{
+                root: classes.inputRoot,
+                input: classes.inputInput,
+              }}
+              inputProps={{ "aria-label": "search" }}
+              onKeyUp={(eve) => {
+                // console.log(eve.key);
+                eve.key === "Enter" && handleSearch(eve.target.value);
+              }}
+            />
+          </div>
+        </Grid>{" "}
+        <Grid item style={{ color: "white" }}>
           <FormControl component="fieldset">
             <FormLabel component="legend">Sort menus by:</FormLabel>
             <RadioGroup
@@ -153,8 +155,8 @@ function Search(props) {
             </RadioGroup>
           </FormControl>
         </Grid>
-      )}
-    </Grid>
+      </Grid>
+    )
   );
 }
 

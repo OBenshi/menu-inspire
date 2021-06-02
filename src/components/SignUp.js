@@ -1,40 +1,18 @@
-import React, { useRef, useState, useContext, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-// import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import { useAuth } from "../context/AuthContext";
-// import { useDb } from "../context/firestoreContext";
-import {
-  NavLink,
-  Link,
-  Redirect,
-  useHistory,
-  useRouteMatch,
-} from "react-router-dom";
-
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { Alert } from "@material-ui/lab";
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import React, { useRef, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import Copyright from "../components/Copyright.js";
+import { useAuth } from "../context/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -50,29 +28,24 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(3),
-    // backgroundColor: "green",
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  container: {},
 }));
 
 export default function SignUp() {
   const classes = useStyles();
   const emailRef = useRef();
   const passwordRef = useRef();
-  const history = useHistory();
   const passwordConfirmRef = useRef();
   const firstNameRef = useRef();
   const lastNameRef = useRef();
-  const { signup, currentUser } = useAuth();
-  // const { addNewUser } = useDb();
+  const { signup, currentUser, error, setError } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  // console.log(currentUser.uid);
   async function handleSubmit(event) {
     event.preventDefault();
-    // console.log(passwordRef.current.value);
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
       return setError("Passwords do not match");
     }
@@ -85,18 +58,6 @@ export default function SignUp() {
         emailRef.current.value,
         passwordRef.current.value
       );
-      // .then(
-      //   () => console.log(currentUser)
-      //   // addNewUser(
-      //   //   currentUser.uid,
-      //   //   firstNameRef.current.value,
-      //   //   lastNameRef.current.value,
-      //   //   emailRef.current.value,
-      //   //   passwordRef.current.value
-      //   // )
-      // )
-      // .catch((error) => console.log(error));
-
       console.log(currentUser);
     } catch {
       return setError("Failed to create an account");
@@ -106,10 +67,9 @@ export default function SignUp() {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" className={classes.container}>
       <CssBaseline />
       <div className={classes.paper}>
-        {/* {console.log(currentUser)} */}
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -185,12 +145,6 @@ export default function SignUp() {
                 id="passwordConfirm"
                 inputRef={passwordConfirmRef}
                 // autoComplete="current-password"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
               />
             </Grid>
           </Grid>

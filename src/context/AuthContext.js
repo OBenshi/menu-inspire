@@ -18,6 +18,8 @@ export function AuthProvider({ children }) {
   const history = useHistory();
   const [lastScrollY, setLastScrollY] = useState(0);
   const [lastScrollX, setLastScrollX] = useState(0);
+  const [userInfo, setUserInfo] = useState({});
+  const [error, setError] = useState("");
   // const [favs, setFavs] = useState([]);
 
   const addNewUser = (uid, firstName, lastName, email, password) =>
@@ -35,7 +37,7 @@ export function AuthProvider({ children }) {
         auth.onAuthStateChanged((user) => {
           setCurrentUser(user);
           setLoading(false);
-          history.push("/dashboard");
+          history.push("/");
         });
         // db.collection("users")
         //   .doc(uid)
@@ -65,15 +67,50 @@ export function AuthProvider({ children }) {
       })
 
       .catch((e) => {
-        console.log(e);
+        setError(e);
       });
 
   const login = (email, password) =>
-    auth.signInWithEmailAndPassword(email, password);
+    auth.signInWithEmailAndPassword(email, password).catch((e) => {
+      setError(e);
+    });
 
-  const logout = () => auth.signOut();
+  const logout = () =>
+    auth.signOut().catch((e) => {
+      setError(e);
+    });
 
-  const resetPassword = (email) => auth.sendPasswordResetEmail(email);
+  const resetPassword = (email) =>
+    auth.sendPasswordResetEmail(email).catch((e) => {
+      setError(e);
+    });
+
+  const updateEmail = (email) =>
+    currentUser.updateEmail(email).catch((e) => {
+      setError(e);
+    });
+
+  const updatePassword = (password) =>
+    currentUser.updatePassword(password).catch((e) => {
+      setError(e);
+    });
+  const getUserInfo = (currentUser) => {
+    db.collection("users")
+      .doc(currentUser.uid)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          console.log("userInfo", doc.data());
+          setUserInfo(doc.data());
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      })
+      .catch((e) => {
+        setError(e);
+      });
+  };
 
   const value = {
     currentUser,
@@ -81,10 +118,17 @@ export function AuthProvider({ children }) {
     login,
     logout,
     resetPassword,
+    getUserInfo,
+    userInfo,
+    setUserInfo,
     lastScrollX,
     setLastScrollX,
     lastScrollY,
     setLastScrollY,
+    updateEmail,
+    updatePassword,
+    error,
+    setError,
     // favs,
     // setFavs,
   };

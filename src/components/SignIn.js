@@ -1,39 +1,19 @@
-import React, { useRef, useState, useContext, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-// import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import { useAuth } from "../context/AuthContext";
-import {
-  NavLink,
-  Link,
-  Redirect,
-  useHistory,
-  useRouteMatch,
-} from "react-router-dom";
-
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { Alert } from "@material-ui/lab";
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import React, { useRef, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import Copyright from "../components/Copyright.js";
+import { useAuth } from "../context/AuthContext";
+import { auth } from "../firebase";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -54,37 +34,39 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  container: {
+    paddingBottom: "12rem",
+  },
 }));
 
 export default function SignIn() {
   const classes = useStyles();
   const emailRef = useRef();
   const passwordRef = useRef();
-  const { login } = useAuth();
+  const { error, setError } = useAuth();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  // console.log(currentUser);
   async function handleSubmit(event) {
     event.preventDefault();
-    // console.log(passwordRef.current.value);
-    try {
-      setError("");
-      setLoading(true);
-      await login(emailRef.current.value, passwordRef.current.value);
-      history.push("/dashboard");
-    } catch {
-      setError("Failed to Login");
-    }
+    setError("");
+    setLoading(true);
 
+    auth
+      .signInWithEmailAndPassword(
+        emailRef.current.value,
+        passwordRef.current.value
+      )
+      .then(() => history.push("/"))
+      .catch((e) => {
+        setError(e);
+      });
     setLoading(false);
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" className={classes.container}>
       <CssBaseline />
       <div className={classes.paper}>
-        {/* {console.log(currentUser)} */}
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -93,7 +75,7 @@ export default function SignIn() {
         </Typography>
         {error && (
           <Alert variant="filled" color="error" severity="error">
-            {error}
+            {error.message}
           </Alert>
         )}
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
