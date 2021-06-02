@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import apiKey from "../key.js";
+// import apiKey from "../key.js";
 
 const GetMenus = () => {
   const [menus, setMenus] = useState([]);
   const fetchMenus = () => {
     fetch(
-      `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${apiKey}`
+      `https://cab-cors-anywhere.herokuapp.com/http://api.menus.nypl.org/menus?&token=${process.env.REACT_APP_NYPL_API_KEY}`
     )
       .then((response) => response.json())
       .then((data) => {
