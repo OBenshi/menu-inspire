@@ -1,34 +1,25 @@
-import React, { useState, useEffect, useContext } from "react";
+import { Drawer, Grid, List, ListItem } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import InputBase from "@material-ui/core/InputBase";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 import HomeIcon from "@material-ui/icons/Home";
 import MenuIcon from "@material-ui/icons/Menu";
-import SearchIcon from "@material-ui/icons/Search";
+import MenuBookIcon from "@material-ui/icons/MenuBook";
+import InboxIcon from "@material-ui/icons/MoveToInbox";
+import React, { useContext, useState } from "react";
+import { NavLink, useHistory, useRouteMatch } from "react-router-dom";
 import Search from "../components/Search";
-import WhatshotIcon from "@material-ui/icons/Whatshot";
-import {
-  NavLink,
-  Link,
-  Redirect,
-  useHistory,
-  useRouteMatch,
-} from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 // import { SearchContext } from "../context/searchContext";
 import { MenusContext } from "../context/menusContext";
-// import Link from "@material-ui/core/Link";
-import Button from "@material-ui/core/Button";
-import { ClickAwayListener, Drawer, List, ListItem } from "@material-ui/core";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
-import Divider from "@material-ui/core/Divider";
-import { useAuth } from "../context/AuthContext";
+
 const useStyles = makeStyles((theme) => ({
   appBarchen: {
     background:
@@ -58,9 +49,9 @@ const useStyles = makeStyles((theme) => ({
     background: "rgba(255, 184, 226, 0.2)",
   },
   special: {
-    fontFamily: "Permanent Marker",
-    fontSize: "2rem",
-    color: "orange",
+    // fontFamily: "Permanent Marker",
+    // fontSize: "2rem",
+    // color: "orange",
   },
   search: {
     position: "relative",
@@ -112,24 +103,24 @@ const useStyles = makeStyles((theme) => ({
   },
   link: {
     display: "inline-flex",
-    color: theme.palette.secondary.contrastText,
+    // color: theme.palette.secondary.contrastText,
     // color: "white",
-    fontFamily: "Permanent Marker",
-    fontSize: "1.5rem",
+    // fontFamily: "Permanent Marker",
+    // fontSize: "1.5rem",
     textDecoration: "none",
   },
   linkDisabled: {
     display: "inline-flex",
-    color: theme.palette.secondary.contrastText,
+    // color: theme.palette.secondary.contrastText,
     // color: "white",
-    fontFamily: "Permanent Marker",
-    fontSize: "1.5rem",
-    textDecoration: "underline",
+    // fontFamily: "Permanent Marker",
+    // fontSize: "1.5rem",
+    // textDecoration: "underline",
   },
   icon: {
     marginRight: theme.spacing(0.5),
-    width: 20,
-    height: 20,
+    // width: 20,
+    // height: 20,
   },
   list: {
     width: 230,
@@ -139,6 +130,15 @@ const useStyles = makeStyles((theme) => ({
     paper: {
       background: "#ff0000",
     },
+  },
+  star: {
+    color: "white",
+  },
+  linkItem: {
+    padding: "0.3rem",
+  },
+  logoGrid: {
+    flexGrow: 1,
   },
 }));
 
@@ -207,13 +207,20 @@ export default function SearchAppBar() {
       <Divider />
       {currentUser && (
         <List>
-          {" "}
+          <NavLink to="/Favourites">
+            <ListItem button key={"favourites"}>
+              <ListItemIcon>
+                <FavoriteIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Favourites"} />
+            </ListItem>
+          </NavLink>{" "}
           <NavLink to="/dashboard">
             <ListItem button key={"dashboard"}>
               <ListItemIcon>
                 <InboxIcon />
               </ListItemIcon>
-              <ListItemText primary={`${currentUser.displayName} Zone`} />
+              <ListItemText primary={"Manage profile"} />
             </ListItem>
           </NavLink>
           <ListItem button key={"logout"} onClick={handleLogOut}>
@@ -260,7 +267,7 @@ export default function SearchAppBar() {
           <IconButton
             edge="start"
             className={classes.menuButton}
-            color="inherit"
+            color="secondary"
             aria-label="open drawer"
             onClick={toggleDrawer(true)}
           >
@@ -272,75 +279,177 @@ export default function SearchAppBar() {
             open={drawerState}
             onClose={toggleDrawer(false)}
             className={classes.drawerList}
-            elevation={25}
+            elevation={16}
           >
             <Typography variant="h6" align="center" noWrap color="primary">
-              <span className={classes.special}>Menu</span>
-              <span className={classes.special}>Inspire</span> <sup>*</sup>
+              MenuInspire<sup className={classes.star}>*</sup>
             </Typography>
             {list()}
           </Drawer>
-          <Typography className={classes.title} variant="h6" noWrap>
-            <span className={classes.special}>Menu</span>
-            <span className={classes.special}>Inspire</span> <sup>*</sup>
-          </Typography>
-          <div>
-            {/* {currentUser && currentUser.uid} */}
-            {history.location.pathname !== "/" ? (
-              <NavLink
-                to="/"
-                className={classes.link}
-                onClick={() => clearSearchTerm()}
+          <Grid container>
+            <Grid item className={classes.logoGrid}>
+              <Typography
+                className={classes.title}
+                variant="h4"
+                color="primary"
+                // noWrap
+                align="left"
               >
-                <HomeIcon className={classes.icon} />
-                home
-              </NavLink>
-            ) : (
-              <span className={classes.linkDisabled}>
-                {" "}
-                <HomeIcon className={classes.icon} />
-                home
-              </span>
-            )}
-            {history.location.pathname !== "/menus" ? (
-              <NavLink
-                to="/menus"
-                className={classes.link}
-                onClick={(event) => {
-                  clearMenus();
-                  clearSearchTerm();
-                  setResultPage(1);
-                  changeFetchAgain();
-                  setDoNotFetch(false);
-                  console.log(resultPage, searchTerm);
-                }}
-              >
-                <WhatshotIcon className={classes.icon} />
-                Menus
-              </NavLink>
-            ) : (
-              <span className={classes.linkDisabled}>
-                <WhatshotIcon className={classes.icon} />
-                Menus
-              </span>
-            )}{" "}
-            {currentUser &&
-              (history.location.pathname !== "/Favourites" ? (
-                <NavLink
-                  to="/Favourites"
-                  className={classes.link}
-                  onClick={() => clearSearchTerm()}
-                >
-                  <HomeIcon className={classes.icon} />
-                  {`${currentUser.displayName}'s Favourites`}
-                </NavLink>
-              ) : (
-                <span className={classes.linkDisabled}>
-                  <HomeIcon className={classes.icon} />
-                  {`${currentUser.displayName}'s Favourites`}
-                </span>
-              ))}
-          </div>{" "}
+                MenuInspire<sup className={classes.star}>*</sup>
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Grid container>
+                {/* {currentUser && currentUser.uid} */}
+                {history.location.pathname !== "/" ? (
+                  <Grid item className={classes.linkItem}>
+                    <NavLink
+                      to="/"
+                      className={classes.link}
+                      onClick={() => clearSearchTerm()}
+                    >
+                      <Typography
+                        color="primary"
+                        variant="h5"
+                        variantMapping={{ h5: "h6" }}
+                        align="center"
+                      >
+                        home{"\u00A0"}
+                        <HomeIcon className={classes.icon} />
+                      </Typography>
+                    </NavLink>
+                  </Grid>
+                ) : (
+                  <Grid item className={classes.linkItem}>
+                    <Typography
+                      color="secondary"
+                      variant="h5"
+                      variantMapping={{ h5: "h6" }}
+                      className={classes.linkDisabled}
+                      align="center"
+                    >
+                      {" "}
+                      home{"\u00A0"}
+                      <HomeIcon className={classes.icon} />
+                    </Typography>
+                  </Grid>
+                )}
+                {history.location.pathname !== "/menus" ? (
+                  <Grid item className={classes.linkItem}>
+                    <NavLink
+                      to="/menus"
+                      className={classes.link}
+                      onClick={(event) => {
+                        clearMenus();
+                        clearSearchTerm();
+                        setResultPage(1);
+                        changeFetchAgain();
+                        setDoNotFetch(false);
+                        console.log(resultPage, searchTerm);
+                      }}
+                    >
+                      <Typography
+                        color="primary"
+                        variant="h5"
+                        variantMapping={{ h5: "h6" }}
+                        align="center"
+                      >
+                        Menus{"\u00A0"}
+                        <MenuBookIcon className={classes.icon} />
+                      </Typography>
+                    </NavLink>
+                  </Grid>
+                ) : (
+                  <Grid item className={classes.linkItem}>
+                    <Typography
+                      color="secondary"
+                      variant="h5"
+                      variantMapping={{ h5: "h6" }}
+                      className={classes.linkDisabled}
+                      align="center"
+                    >
+                      Menus{"\u00A0"}
+                      <MenuBookIcon className={classes.icon} />
+                    </Typography>
+                  </Grid>
+                )}{" "}
+                {!currentUser &&
+                  (history.location.pathname !== "/signin" ? (
+                    <Grid item className={classes.linkItem}>
+                      <NavLink
+                        to="/signin"
+                        className={classes.link}
+                        onClick={() => clearSearchTerm()}
+                      >
+                        <Typography
+                          color="primary"
+                          variant="h5"
+                          variantMapping={{ h5: "h6" }}
+                          align="center"
+                          noWrap
+                        >
+                          {`Login`}
+                          {"\u00A0"}
+                          <ExitToAppIcon className={classes.icon} />
+                        </Typography>
+                      </NavLink>
+                    </Grid>
+                  ) : (
+                    <Grid item className={classes.linkItem}>
+                      <Typography
+                        color="secondary"
+                        variant="h5"
+                        variantMapping={{ h5: "h6" }}
+                        className={classes.linkDisabled}
+                        align="center"
+                        noWrap
+                      >
+                        {`Login`}
+                        {"\u00A0"}
+                        <FavoriteIcon className={classes.icon} />
+                      </Typography>
+                    </Grid>
+                  ))}
+                {/* {currentUser &&
+                  (history.location.pathname !== "/Favourites" ? (
+                    <Grid item className={classes.linkItem}>
+                      <NavLink
+                        to="/Favourites"
+                        className={classes.link}
+                        onClick={() => clearSearchTerm()}
+                      >
+                        <Typography
+                          color="primary"
+                          variant="h5"
+                          variantMapping={{ h5: "h6" }}
+                          align="center"
+                          noWrap
+                        >
+                          {`${currentUser.displayName}'s Favourites`}
+                          {"\u00A0"}
+                          <FavoriteIcon className={classes.icon} />
+                        </Typography>
+                      </NavLink>
+                    </Grid>
+                  ) : (
+                    <Grid item className={classes.linkItem}>
+                      <Typography
+                        color="secondary"
+                        variant="h5"
+                        variantMapping={{ h5: "h6" }}
+                        className={classes.linkDisabled}
+                        align="left"
+                        noWrap
+                      >
+                        {`${currentUser.displayName}'s Favourites`}
+                        {"\u00A0"}
+                        <FavoriteIcon className={classes.icon} />
+                      </Typography>
+                    </Grid>
+                  ))} */}
+              </Grid>
+            </Grid>
+          </Grid>{" "}
         </Toolbar>{" "}
         {history.location.pathname === "/menus" && <Search />}
       </AppBar>
