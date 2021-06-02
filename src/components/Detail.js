@@ -19,7 +19,7 @@ import MenuPage from "../components/MenuPage.js";
 import { useAuth } from "../context/AuthContext";
 import { useDb } from "../context/firestoreContext";
 import { MenusContext } from "../context/menusContext";
-import apiKey from "../key.js";
+// import apiKey from "../key.js";
 import ScrollToTop from "./ScrollTop";
 
 const useStyles = makeStyles((theme) => ({
