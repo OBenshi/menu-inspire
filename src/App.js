@@ -1,33 +1,29 @@
-import GetMenus from "./components/GetMenus";
 import "@fontsource/permanent-marker";
 import "@fontsource/playfair-display";
-import apiKey from "./key.js";
-import Home from "./views/Home.js";
-// import "./App.css";
-import Menus from "./views/Menus.js";
-import MenuPage from "./components/MenuPage.js";
-import NavBar from "./components/NavBar.js";
-import Detail from "./components/Detail.js";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import React, { useState, useEffect } from "react";
 import {
   createMuiTheme,
   CssBaseline,
   makeStyles,
   ThemeProvider,
 } from "@material-ui/core";
-import { SearchContextProvider } from "./context/searchContext";
-import { MenusContextProvider } from "./context/menusContext";
-import { FirestoreContextProvider } from "./context/firestoreContext";
-import SignUp from "./components/SignUp";
-import SignIn from "./components/SignIn";
-import Dashboard from "./components/Dashboard";
-import PrivateRoute from "./components/PrivateRoute";
-import { AuthProvider } from "./context/AuthContext";
-import ForgotPassword from "./components/ForgotPassword";
-import ScrollToTop from "./components/ScrollTop";
-import Favs from "./components/Favs";
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
+import Dashboard from "./components/Dashboard";
+import Detail from "./components/Detail.js";
+import Favs from "./components/Favs";
+import ForgotPassword from "./components/ForgotPassword";
+import NavBar from "./components/NavBar.js";
+import PrivateRoute from "./components/PrivateRoute";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
+import { AuthProvider } from "./context/AuthContext";
+import { FirestoreContextProvider } from "./context/firestoreContext";
+import { MenusContextProvider } from "./context/menusContext";
+// import apiKey from "./key.js";
+import Home from "./views/Home.js";
+// import "./App.css";
+import Menus from "./views/Menus.js";
 const useStyles = makeStyles({
   root: {
     paddingBottom: "5rem",
